@@ -64,25 +64,3 @@ A common element might be a jsDependencies module which includes all the javascr
 /source/elements/core/jsDependencies/underscore.js
 /source/elements/core/jsDependencies/skedge.js
 ```
-###### Element Dir
-A  sample element might be a text input,
-```
-/source/elements/input/
-/source/elements/input/text
-/source/elements/input/text/main.jade
-/source/elements/input/text/script.js
-/source/elements/input/text/style.js
-```
-or a dropdown selector,
-```
-/source/elements/input/
-/source/elements/input/dropdown.html
-```
-or a confirm button.
-```
-/source/elements/input/
-/source/elements/input/confirm
-/source/elements/input/confirm/main.jade
-/source/elements/input/confirm/script.js
-/source/elements/input/confirm/style.js
-```

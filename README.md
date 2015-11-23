@@ -26,7 +26,7 @@ A page folder is a fairly basic setup, its assembled using a combination of vulc
 /source/index/script.js
 ```
 #### Polymer Element
-Wherever one could put a polymer element the following three setups are considered viable, the most basic of which is the single html file which will not be processed only moved around.
+Wherever one could put a polymer element the following setups are considered viable, the most basic of which is the single html file which will not be processed only moved around.
 ```
 /source/elements/input/
 /source/elements/input/dropdown.html

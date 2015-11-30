@@ -1,0 +1,40 @@
+{
+  "name": "teflon",
+  "version": "1.0.0",
+  "description": "Polymer App Template",
+  "main": "bin/build.js",
+  "scripts": {
+    "start": "node bin/build.js",
+    "test": "node bin/test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HyphnKnight/Teflon.git"
+  },
+  "keywords": [
+    "Polymer"
+  ],
+  "author": "Rafe Lepre",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/HyphnKnight/Teflon/issues"
+  },
+  "homepage": "https://github.com/HyphnKnight/Teflon#readme",
+  "dependencies": {
+    "autoprefixer": "^6.1.1",
+    "babel-core": "^6.2.1",
+    "babel-preset-es2015": "^6.1.18",
+    "cssnano": "^3.3.2",
+    "fs-extra": "^0.26.2",
+    "glob": "^6.0.1",
+    "html-minifier": "^1.0.0",
+    "jade": "^1.11.0",
+    "jshint": "^2.8.0",
+    "log": "github:hyphnknight/log",
+    "node-sass": "^3.4.2",
+    "postcss": "^5.0.12",
+    "rsvp": "^3.1.0",
+    "underscore": "^1.8.3",
+    "vulcanize": "^1.14.0"
+  }
+}

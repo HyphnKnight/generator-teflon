@@ -1,0 +1,3 @@
+mixin htmlImports( dir , names )
+	-for ( nameIndex in names )
+		link(rel='import' href=dir+'/'+names[nameIndex]+'.html')

@@ -23,7 +23,7 @@ Polymer({
 		value : {
 			type		: Boolean,
 			value		: '',
-			notify		: true,
+			notify		: true
 		}
 
 	},
@@ -34,7 +34,9 @@ Polymer({
 	},
 
 	_error : function ( ) {
+
 		this.toggleClass( 'error' , this.error );
+
 	}
 
 });

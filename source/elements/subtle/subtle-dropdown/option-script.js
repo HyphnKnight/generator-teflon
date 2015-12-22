@@ -26,7 +26,7 @@ Polymer({
 	},
 
 	_select : function ( ) {
-		this.fir ( 'selected' , this.option );
+		this.fire ( 'selected' , this.option );
 	},
 
 	_hoverOver : function ( ) {

@@ -1,0 +1,51 @@
+<dom-module id="slight-ratio-chart-item">
+	<template>
+		<style>
+			:host {
+				height: 100px;
+				background-color: blue;
+				margin: 0 0.5%;
+			}
+		</style>
+		<div class="slight-ratio-chart-item-name" >{{name}}</div>
+	</template>
+
+	<script>
+		Polymer({
+			is: "slight-ratio-chart-item",
+			ready: function() {
+
+				this._widthAdjust();
+
+			},
+			properties : {
+				name : {
+					type : String,
+					value : ''
+				},
+				value : {
+					type : Number,
+					value : 0,
+					observer : '_widthAdjust'
+				},
+				max : {
+					type : Number,
+					value : 0,
+					observer : '_widthAdjust'
+				}
+			},
+			_widthAdjust : function ( ) {
+
+				this.root.host.style.width = value / max + '%';
+
+			},
+			listeners: {
+				'tap': 'handleClick',
+				'click': 'handleClick'
+			},
+			handleClick : function ( ) {
+			}
+		});
+	</script>
+
+</dom-module>

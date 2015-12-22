@@ -1,0 +1,20 @@
+:host {
+	font-size : 12px;
+	line-height : 30px;
+
+	position : absolute;
+	top : 0;
+	left : 0;
+
+	overflow : hidden;
+
+	max-height : 0;
+	padding : 0 20px;
+
+	cursor : pointer;
+	-webkit-transition : 0s ease opacity 0s, 0s linear max-height 0.35s;
+	        transition : 0s ease opacity 0s, 0s linear max-height 0.35s;
+
+	opacity : 0;
+	color : black;
+}

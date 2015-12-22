@@ -1,0 +1,29 @@
+<dom-module id="core-structure">
+
+	<template>
+		<style>
+		</style>
+		<div>core-structure</div>
+		<content>
+		</content>
+	</template>
+
+	<script>
+		Polymer({
+			is: "core-structure",
+			ready: function() {
+				this.selected = this.selected || false;
+				this.error = this.error || false;
+			},
+			listeners: {
+				'tap': 'handleClick',
+				'click': 'handleClick'
+			},
+			handleClick : function ( ) {
+				this.selected = !this.selected;
+				Polymer.dom(this.root).className = this.selected ? 'selected' : '';
+			}
+		});
+	</script>
+
+</dom-module>

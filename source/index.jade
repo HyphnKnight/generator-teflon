@@ -1,7 +1,7 @@
 
 //- Local Includes
-//-include ./global/jade/_config.jade
-include ./global/jade/_mixin.jade
+include ./imports/jade/_mixin.jade
+include ./imports/jade/_config.jade
 
 html
 	head
@@ -17,10 +17,6 @@ html
 		meta(name='viewport' content='width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0')
 		meta(name='apple-mobile-web-app-capable' content='yes')
 
-		//- +htmlImports( 'core' , [ 'webcomponents' , 'polymer' , 'app' ] );
-		+htmlImports( 'inputs' , [ 'slight-input-button' ] )
-		//- +htmlImports( 'inputs' , [ 'text' ] );
-
 		//- link(rel="icon" href='#{favicon}' type="image/x-icon")
 
 		//- meta(name='keywords' content='#{keywords}')
@@ -34,7 +30,20 @@ html
 		script(src='//html5shim.googlecode.com/svn/trunk/html5.js')
 		<![endif]-->
 
+		+cssImports( 'styles' , [ 'normalize' ] )
+		+scriptImports( 'scripts' , [ 'underscore' , 'webcomponents' ] )
+		+htmlImports( 'core' , [ 'core-polymer' , 'core-structure' ] )
+		+htmlImports( 'charts' , [ 'slight-ratio-chart' ] )
+		+htmlImports( 'subtle' , [ 'subtle-button' , 'subtle-dropdown' , 'subtle-input' , 'subtle-textarea' ] )
+
 	body
-		app
-		slight-input-text
-		slight-input-button
+		core-structure
+		subtle-button
+			p asdfasdhfklajshdf
+		subtle-dropdown
+		subtle-input( label="First Name" type="text" )
+		subtle-input( label="First Name" type="text" )
+		subtle-input( label="First Name" type="text" )
+		subtle-input( label="First Name" type="text" )
+		subtle-input( label="First Name" type="text" )
+		subtle-textarea( label="Description" )

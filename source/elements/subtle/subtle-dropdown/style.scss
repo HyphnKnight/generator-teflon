@@ -1,0 +1,145 @@
+:host {
+	position : relative;
+
+	display : inline-block;
+
+	width : 296px;
+	height : 30px;
+	margin-top : 20px;
+
+	color : black;
+	border : 1px solid black;
+	background-color : transparent;
+	&.invertColor {
+		color : white;
+		border-color : white;
+	}
+	& .arrow {
+		position : absolute;
+		top : 12px;
+		left : 2px;
+
+		width : 6px;
+		height : 6px;
+
+		-webkit-transition : 0.2s ease opacity 0.1s, 0.2s ease transform;
+		        transition : 0.2s ease opacity 0.1s, 0.2s ease transform;
+		-webkit-transform : rotateZ(-45deg) translateZ(0);
+		        transform : rotateZ(-45deg) translateZ(0);
+
+		opacity : 0;
+		border-color : black;
+		border-right : 1px solid;
+		border-bottom : 1px solid;
+	}
+	& label {
+		font-size : 12px;
+
+		position : absolute;
+		z-index : -10;
+		top : 8px;
+		left : 19px;
+
+		-webkit-transition : 0.25s ease all 0.1s;
+		        transition : 0.25s ease all 0.1s;
+		letter-spacing : 0.1em;
+		text-transform : uppercase;
+	}
+	& .options {
+		position : absolute;
+		position : relative;
+		z-index : 20;
+		top : 0;
+		left : 0;
+
+		width : 100%;
+		.bg {
+			position : absolute;
+			z-index : -1;
+			top : -2px;
+			left : -2px;
+
+			width : 100%;
+			height : 100%;
+
+			-webkit-transition : 0.15s ease all 0.1s;
+			        transition : 0.15s ease all 0.1s;
+			-webkit-transform : scale3d(1, 0, 1);
+			        transform : scale3d(1, 0, 1);
+			-webkit-transform-origin : top center;
+			        transform-origin : top center;
+
+			opacity : 0;
+			border : 2px solid black;
+			background-color : black;
+		}
+	}
+	&.invertColor {
+		.bg {
+			border-color : white;
+			background-color : white;
+		}
+		.arrow {
+			border-color : white;
+		}
+		&.hover .arrow {
+			border-color : white !important;
+			background-color : white;
+		}
+		&.selected .arrow {
+			color : white !important;
+		}
+		&.hover subtle-dropdown-option {
+			color : black !important;
+		}
+	}
+	&.hover {
+		.arrow {
+			-webkit-transition : 0.2s ease opacity 0.15s, 0.2s ease transform;
+			        transition : 0.2s ease opacity 0.15s, 0.2s ease transform;
+
+			opacity : 1;
+			border-color : white !important;
+		}
+		label {
+			-webkit-transform : translate3d(0, -28px, 0);
+			        transform : translate3d(0, -28px, 0);
+		}
+		.options .bg {
+			-webkit-transform : scale3d(1, 1, 1);
+			        transform : scale3d(1, 1, 1);
+
+			opacity : 1;
+		}
+		subtle-dropdown-option {
+			max-height : 5000px;
+
+			-webkit-transition : 0.2s ease opacity 0.15s, 0s linear max-height 0s;
+			        transition : 0.2s ease opacity 0.15s, 0s linear max-height 0s;
+
+			opacity : 1;
+			color : white;
+		}
+	}
+	&.selected {
+		.arrow {
+			-webkit-transform : translate3d(0, 0, 0) rotateZ(-45deg);
+			        transform : translate3d(0, 0, 0) rotateZ(-45deg);
+
+			opacity : 1;
+			border-color : black;
+		}
+		label {
+			-webkit-transform : translate3d(0, -28px, 0);
+			        transform : translate3d(0, -28px, 0);
+		}
+		subtle-dropdown-option:first-child {
+			max-height : 40px;
+
+			opacity : 1;
+		}
+		&.hover subtle-dropdown-option:first-child {
+			opacity : 1;
+		}
+	}
+}

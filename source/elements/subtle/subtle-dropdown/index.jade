@@ -1,0 +1,15 @@
+link(rel='import' href='subtle-dropdown-option.html')
+
+dom-module#subtle-dropdown
+
+	template
+		link(rel='stylesheet' type="text/css" href='style.css')
+
+		label{{label}}
+		.options
+			template(is="dom-repeat" items="{{options}}" as="option")
+				subtle-dropdown-option(invertColor="{{invertColor}}" index="{{index}}" option="{{option}}")
+			.bg
+			.arrow
+
+	script(src='script.js')

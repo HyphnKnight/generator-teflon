@@ -1,0 +1,122 @@
+textarea ,
+input {
+	letter-spacing : 0.1em;
+
+	outline : none;
+}
+:host {
+	font-size : 12px;
+
+	position : relative;
+
+	display : inline-block;
+	overflow : visible;
+
+	width : 256px;
+	height : 160px;
+	margin-top : 25px;
+	padding : 0 20px;
+
+	color : black;
+	border : 1px solid black;
+	background-color : transparent;
+}
+:host.error {
+	border-color : #ac0000 !important;
+}
+:host label {
+	font-size : 12px;
+
+	position : absolute;
+	z-index : -10;
+	top : 6px;
+	left : 18px;
+
+	-webkit-transition : 0.25s ease all 0.1s;
+	        transition : 0.25s ease all 0.1s;
+	-webkit-transform : translateZ(0);
+	        transform : translateZ(0);
+	letter-spacing : 0.1em;
+	text-transform : uppercase;
+}
+:host textarea {
+	line-height : 20px;
+
+	position : absolute;
+	top : 0;
+	left : 0;
+
+	box-sizing : border-box;
+	width : 100%;
+	height : 160px;
+	padding : 0 20px;
+
+	resize : none;
+	-webkit-transition : 0.2s ease all;
+	        transition : 0.2s ease all;
+
+	color : black;
+	border : none;
+	background-color : transparent;
+}
+:host textarea:hover + .bg + label {
+	-webkit-transform : translate3d(0, -28px, 0);
+	        transform : translate3d(0, -28px, 0);
+}
+:host textarea:valid + .bg + label {
+	-webkit-transition : 0.25s ease all;
+	        transition : 0.25s ease all;
+	-webkit-transform : translate3d(0, -28px, 0);
+	        transform : translate3d(0, -28px, 0);
+}
+:host textarea:focus {
+	color : white;
+}
+:host textarea:focus + label {
+	-webkit-transform : translate3d(0, -28px, 0);
+	        transform : translate3d(0, -28px, 0);
+}
+:host textarea:focus + .bg {
+	-webkit-transform : scale3d(1, 1, 1);
+	        transform : scale3d(1, 1, 1);
+
+	opacity : 1;
+}
+:host textarea:focus + .bg + label {
+	-webkit-transition : 0.25s ease all;
+	        transition : 0.25s ease all;
+	-webkit-transform : translate3d(0, -28px, 0);
+	        transform : translate3d(0, -28px, 0);
+}
+:host .bg {
+	position : absolute;
+	z-index : -1;
+	top : 0;
+	left : 0;
+
+	width : 100%;
+	height : 100%;
+
+	-webkit-transition : 0.2s ease all;
+	        transition : 0.2s ease all;
+	-webkit-transform : scale3d(0, 1, 1);
+	        transform : scale3d(0, 1, 1);
+	-webkit-transform-origin : left center;
+	        transform-origin : left center;
+
+	opacity : 0;
+	background-color : black;
+}
+:host.invert {
+	color : white;
+	border-color : white;
+}
+:host.invert textarea {
+	color : white;
+}
+:host.invert textarea:focus {
+	color : black;
+}
+:host.invert .bg {
+	background-color : black;
+}

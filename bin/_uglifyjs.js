@@ -6,7 +6,7 @@ const
 
 module.exports = function uglify ( src , dst ) {
 
-	log.runningTask( 'uglify' , 'node-minify' , src );
+	log.processing( path , 'node-minify.uglify' );
 
 	dst = _.isString( dst ) ? dst : src;
 

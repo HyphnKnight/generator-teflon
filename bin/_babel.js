@@ -4,7 +4,7 @@ const
 
 module.exports = function babel ( buffer, path ) {
 
-	log.runningTask( 'transform' , 'babel' , path , __filename);
+	log.processing( path , 'babel.transform' );
 
 	try { return transform( buffer , { presets : ['es2015'] } ).code; }
 	catch ( error ) {

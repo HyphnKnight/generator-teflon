@@ -5,7 +5,7 @@ const
 
 function lint ( buffer , path ) {
 
-	log.runningTask( 'JSHINT' , 'jshint' , path , __filename);
+	log.processing( path , 'jshint.JSHINT' );
 
 	try {
 

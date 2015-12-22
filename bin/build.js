@@ -4,15 +4,11 @@ const
 
 	/* Custom Modules */
 
-	glob		= require( './_glob.js' ),
-	postcss		= require( './_postcss.js' ),
-	sass		= require( './_sass.js' ),
-	babel		= require( './_babel.js' ),
-	jshint		= require( './_jshint.js' ),
-	vulcanize	= require( './_vulcanize.js' ),
-	uglifyjs	= require( './_uglifyjs.js' ),
-	cleanCSS	= require( './_cleanCSS.js' ),
-
+	glob			= require( './_glob.js' ),
+	compile			= require( './_compile.js' ),
+	assembleModule	= require( './_assembleModule.js' ),
+	packageModule	= require( './_packageModule.js' ),
+	vulcanize		= require( './_vulcanize.js' ),
 
 
 	/* Build Modules */
@@ -23,7 +19,6 @@ const
 	express	= require ( 'express' ),
 	path	= require( 'path' ),
 	fs		= require( 'fs-extra-promise' ),
-	jade	= require( 'jade' ).render,
 	watcher	= require( 'node-watch' ),
 
 
@@ -52,196 +47,7 @@ const
 	asm = process.cwd() + '/.assembly',
 	pck = process.cwd() + '/.packaged';
 
-function compileScript ( source , dest ) {
-
-	log.runningTask( 'compileScript ' , 'node' , source);
-
-	return fs.readFileAsync( source , 'utf8' )
-		.catch( error => {
-			log.error ( `compileScript has failed to read ${source}` , error );
-			!watch && process.exit(1);
-		} )
-		.then ( buffer => {
-
-			jshint.lint( buffer , source );
-
-			if ( compress ) {
-				return fs.outputFileAsync( dest , babel( buffer , source ) )
-					.then( () => { return uglifyjs( dest ); } );
-			} else {
-				return fs.outputFileAsync( dest , babel( buffer , source ) );
-			}
-
-
-		} )
-		.catch( error => {
-			log.error ( `compileScript has failed to write ${dest}` , error );
-			!watch && process.exit(1);
-		} );
-
-}
-
-function compileStyle ( source , destination , compress ) {
-
-	log.runningTask( 'compileStyle' , 'node' , source);
-
-	return fs.readFileAsync( source , 'utf8' )
-		.catch( error => {
-			log.error ( `compileStyle => readFileAsync has failed to parse ${source}` , error );
-			!watch && process.exit(1);
-		} )
-		.then( buffer => {
-			if ( path.extname( source ) === '.css' ) {
-				return buffer;
-			} else {
-				return sass( { data : buffer, outputStyle : 'nested' } , source )
-			}
-		} )
-		.catch( error => {
-			log.error ( `compileStyle => sass has failed to parse ${source}` , error );
-			!watch && process.exit(1);
-		} )
-		.then ( buffer => {
-			buffer = path.extname( source ) === '.css' ?
-				buffer : buffer.css;
-			return postcss ( source , buffer , compress );
-		} )
-		.catch( error => {
-			log.error ( `compileStyle => postcss has failed to parse ${source}` , error );
-		} )
-		.then ( buffer => {
-			if ( compress ) {
-				return fs.outputFileAsync( destination , buffer )
-					.then( () => { return cleanCSS( destination ); } );
-			} else {
-				return fs.outputFileAsync( destination , buffer );
-			}
-		} )
-		.catch( error => {
-			log.error ( `compileStyle has failed to parse ${source}` , error );
-			!watch && process.exit(1);
-		} );
-
-}
-
-function compileJade ( source , dest , compress ) {
-
-	log.runningTask( 'compileJade' , 'node' , source);
-
-	return fs.readFileAsync( source , 'utf8' )
-		.then ( buffer => { return fs.outputFileAsync( dest , jade( buffer , { pretty : !!compress ? false : '\t' , filename : source } ) );  } )
-		.catch( error => {
-			log.error ( `compileTemplate has failed to parse ${source}` , error );
-			!watch && process.exit(1);
-		} );
-
-}
-
-function prepareModuleAssembly ( source , compress ) {
-
-	log.runningTask( 'prepareModuleAssembly' , 'node' , source);
-
-	return fs.isDirectoryAsync( source )
-		.then( isDirectory => {
-
-			if ( isDirectory ) {
-
-				return fs.readdirAsync( source )
-					.then( files => {
-						return rsvp.all( _.chain(files)
-							.filter( file => {
-								return file.search('.DS_Store') === -1 &&
-									file.search('global') === -1 &&
-									file.search('media') === -1;
-							}  )
-							.map( file => { return prepareModuleAssembly( `${source}/${file}` , compress ) } )
-							.value() );
-					} )
-					.catch( error => {
-						log.error ( `prepareModuleAssembly has failed to parse dir ${source}` , error );
-						!watch && process.exit(1);
-					} );
-
-			} else {
-
-				const
-					fileEnding = path.extname( source ),
-					pathPosition = source.search('/elements') + 9,
-					destination = pathPosition > 9 ? `${asm}/elements/${source.substring(pathPosition)}` : `${asm}/elements/${path.basename(source)}`;
-
-				if ( fileEnding === '.js' ) {
-
-					return compileScript( source , destination , compress );
-
-				} else if ( fileEnding === '.sass' || fileEnding === '.scss' ) {
-
-					return compileStyle( source , destination.replace( fileEnding , '.css' ) , compress );
-
-				} else if ( fileEnding === '.css' ) {
-
-					return compileStyle( source , destination , compress );
-
-				} else if ( fileEnding === '.jade' ) {
-
-					return compileJade( source , destination.replace( '.jade' , '.html' ) , compress );
-
-				} else if ( fileEnding === '.html' ) {
-
-					return fs.copyAsync( source , destination );
-
-				}
-
-			}
-
-		} )
-		.catch( error => {
-			log.error ( `prepareModuleAssembly has failed to parse file ${src}` , error );
-			!watch && process.exit(1);
-		} );
-
-}
-
-function prepareModulePackaging ( assembly , packaging ) {
-
-	log.runningTask( 'prepareModulePackaging' , 'node' , assembly);
-
-	return glob( `${assembly}/elements/**/*.html` )
-		.then ( modulePaths => {
-
-			modulePaths = _.filter( modulePaths , modulePath => {
-				return path.dirname( path.dirname( modulePath ) ) === `${assembly}/elements` || modulePath.search( 'index.html' ) !== -1;
-			} );
-
-			return rsvp.all( _.map( modulePaths , modulePath => {
-
-				return vulcanize( modulePath  )
-					.then( buffer => {
-						return fs.outputFileAsync( modulePath.search( 'index.html' ) !== -1 ?
-								(`${ path.dirname(modulePath) }.html`).replace( '.assembly' , '.packaged' ) :
-								modulePath.replace( '.assembly' , '.packaged' ),
-							buffer );
-					} )
-					.catch( error => {
-						log.error( `Failed to vulcanize ${modulePath}` );
-						!watch && process.exit(1);
-					} );
-
-			} ) );
-
-		} )
-		.then ( () => {
-			return rsvp.all([
-				fs.copyAsync( `${assembly}/scripts` , `${packaging}/scripts` ),
-				fs.copyAsync( `${assembly}/styles` , `${packaging}/styles` ),
-				fs.copyAsync( `${assembly}/index.html` , `${packaging}/index.html` )
-			]);
-		} )
-		.catch ( error => {
-			log.error ( `prepareModulePackaging has failed to parse ${assembly}` , error );
-			!watch && process.exit(1);
-		} );
-
-}
+log.starting( 'Teflon Application Compiler' );
 
 function compileProject ( packaging , destination ) {
 
@@ -279,18 +85,22 @@ function copyMedia( src , dest  ) {
 
 }
 
-function teflonApplicationCompiler ( ) {
+function applicationBuilder ( onlyCore ) {
 
-	log.starting('Teflon Application Compiler');
+	onlyCore = Boolean( onlyCore ) ? '/core' : '';
+
+	const startTime = Date.now();
+
+	log.starting( 'applicationBuilder' );
 
 	return projectCleanup( asm , pck )
 		.catch( error => {
 			log.error ( `The build => projectCleanup has failed` , error );
 			!watch && process.exit(1);
 		} )
-		.then( () => { return compileJade( `${src}/index.jade` , `${asm}/index.html` , compress ); } )
+		.then( () => { return compile.jade( `${src}/index.jade` , `${asm}/index.html` , compress ); } )
 		.catch( error => {
-			log.error ( `The build => compileJade has failed` , error );
+			log.error ( `The build => compile.jade has failed` , error );
 			!watch && process.exit(1);
 		} )
 		.then( () => { return glob(`${src}/scripts/**`) } )
@@ -301,11 +111,11 @@ function teflonApplicationCompiler ( ) {
 		.then( scriptsPaths => {
 			return rsvp.all( _.chain( scriptsPaths )
 				.filter( scriptPath => { return !fs.isDirectorySync( scriptPath ); } )
-				.map( scriptPath => { return compileScript( scriptPath , `${asm}/scripts/${path.basename(scriptPath)}` ); } )
+				.map( scriptPath => { return compile.script( scriptPath , `${asm}/scripts/${path.basename(scriptPath)}` ); } )
 				.value() );
 		} )
 		.catch( error => {
-			log.error ( `The build => compileScripts has failed` , error );
+			log.error ( `The build => compile.script has failed` , error );
 			!watch && process.exit(1);
 		} )
 		.then( () => { return glob(`${src}/styles/**`) } )
@@ -316,22 +126,29 @@ function teflonApplicationCompiler ( ) {
 		.then( stylesPaths => {
 			return rsvp.all( _.chain( stylesPaths )
 				.filter( stylePath => { return !fs.isDirectorySync( stylePath ); } )
-				.map( stylePath => { return compileStyle( stylePath , `${asm}/styles/${path.basename(stylePath)}` ); } )
+				.map( stylePath => { return compile.style( stylePath , `${asm}/styles/${path.basename(stylePath)}` ); } )
 				.value() );
 		} )
 		.catch( error => {
-			log.error ( `The build => compileStyles has failed` , error );
+			log.error ( `The build => compile.style has failed` , error );
 			!watch && process.exit(1);
 		} )
-		.then( () => { return prepareModuleAssembly( `${src}/elements` , false ); } )
+		.then( () => { return assembleModule( `${src}/elements${onlyCore}` , asm , compress , !watch ); } )
 		.catch( error => {
-			log.error ( `The build => prepareModuleAssembly has failed` , error );
+			log.error ( `The build => assembleModule has failed` , error );
 			!watch && process.exit(1);
 		} )
-		.then( () => { return prepareModulePackaging( asm , pck ); } )
+		.then( () => { return packageModule( asm , pck , compress , !watch ); } )
 		.catch( error => {
-			log.error ( `The build => prepareModulePackaging has failed` , error );
+			log.error ( `The build => packageModule has failed` , error );
 			!watch && process.exit(1);
+		} )
+		.then ( () => {
+			return rsvp.all([
+				fs.copyAsync( `${asm}/scripts` , `${pck}/scripts` ),
+				fs.copyAsync( `${asm}/styles` , `${pck}/styles` ),
+				fs.copyAsync( `${asm}/index.html` , `${pck}/index.html` )
+			]);
 		} )
 		.then( () => { return compileProject( pck , dst ) } )
 		.catch( error => {
@@ -340,15 +157,41 @@ function teflonApplicationCompiler ( ) {
 		} )
 		.then( () => { return projectCleanup( asm , pck ) } )
 		.then( () => { return copyMedia( src , dst ) } )
-		.then( () => { log.success( 'Finished Teflon Compilation' ); } )
+		.then( () => { log.success( `Finished Teflon Compilation : ${( Date.now() - startTime )}ms` ); } )
 		.catch( error => {
 			log.error ( `The build has failed` , error );
 			!watch && process.exit(1);
 		} );
 }
 
+function buildModule ( modulePath ) {
 
-function teflonServer ( ) {
+	log.starting( 'buildModule' , modulePath );
+
+	const startTime = Date.now();
+
+	return assembleModule( modulePath , asm , compress , !watch )
+		.catch( error => {
+			log.error ( `buildModule => assembleModule has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return packageModule( asm , dst , compress , !watch ); } )
+		.catch( error => {
+			log.error ( `buildModule => packageModule has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return projectCleanup( asm , pck ) } )
+		.then( () => { log.success( `Finished Building Module : ${( Date.now() - startTime )}ms` ); } )
+		.catch( error => {
+			log.error ( `buildModule has failed` , error );
+			!watch && process.exit(1);
+		} )
+
+}
+
+applicationBuilder(false);
+
+if ( serve ) {
 
 	const
 		app = express(),
@@ -365,30 +208,31 @@ function teflonServer ( ) {
 
 }
 
-function findFirstOrderModule ( filePath ) {
+if ( watch ) {
 
-	if ( filePath.search( `${src}/elements` ) !== -1 ) {
-		while ( path.dirname( path.dirname( filePath  ) ) !== `${src}/elements` ) {
-			filePath = path.dirname( filePath );
+	const findFirstOrderModule = function findFirstOrderModule ( filePath ) {
+
+		if ( filePath.search( `${src}/elements` ) !== -1 ) {
+			while ( path.dirname( path.dirname( filePath  ) ) !== `${src}/elements` ) {
+				filePath = path.dirname( filePath );
+			}
+		} else {
+			return false;
 		}
-	} else {
-		return false;
+
+		return { path : filePath , core : filePath.search( `${src}/elements/core` ) !== -1 };
+
 	}
 
-	return { path : filePath , core : filePath.search( `${src}/elements/core` ) !== -1 };
-
-}
-
-function watchProjectFiles ( ) {
-
 	watcher( src , filename => {
-		teflonApplicationCompiler();
-		console.log( findFirstOrderModule( filename ) );
+		const fileInfo = findFirstOrderModule( filename );
+		if ( fileInfo && !fileInfo.core ) {
+			log.changing( filename , 'change' , 'buildModule' );
+			buildModule( fileInfo.path );
+		} else {
+			log.changing( filename , 'change' , 'applicationBuilder' );
+			applicationBuilder(false);
+		}
 	} );
 
 }
-
-teflonApplicationCompiler();
-
-if ( serve ) teflonServer();
-if ( watch ) watchProjectFiles();

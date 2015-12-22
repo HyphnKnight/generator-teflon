@@ -6,7 +6,7 @@ const
 
 module.exports = function cleanCSSCompiler ( src , dst ) {
 
-	log.runningTask( 'cleanCSSCompiler' , 'node-minify' , src );
+	log.processing( src , 'node-minify.cleanCSSCompiler' );
 
 	dst = _.isString( dst ) ? dst : src;
 

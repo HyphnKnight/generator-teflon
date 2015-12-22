@@ -8,7 +8,7 @@ const
 
 module.exports = function vulcanizer ( path , excludes ) {
 
-	log.runningTask( 'process' , 'vulcanize' , path , __filename);
+	log.processing( path , 'vulcanize.process' );
 
 	excludes = _.isArray( excludes ) ? excludes : [];
 

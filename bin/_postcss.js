@@ -44,7 +44,7 @@ const
 
 module.exports = function postcss ( path , buffer , compress ) {
 
-	log.runningTask( [ (!!compress ? 'cssnano' : 'csscomb' ) , 'autoprefixer' ] , 'postcss' , path );
+	log.processing( path , `${!!compress ? 'cssnano' : 'csscomb'} autoprefixer` );
 
 	return ( !!compress ? parseMin : parse ).process( buffer )
 		.then ( result => { return csscomb.processString(result.css); } )

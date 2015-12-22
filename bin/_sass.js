@@ -5,9 +5,9 @@ const
 
 module.exports = function sass ( options , path ) {
 
-	return new rsvp.Promise( ( resolve , reject ) => {
+	log.processing( path , 'sass.render' );
 
-		log.runningTask( 'render' , 'sass' , path , __filename);
+	return new rsvp.Promise( ( resolve , reject ) => {
 
 		sassRender( options , ( error , buffer ) => {
 

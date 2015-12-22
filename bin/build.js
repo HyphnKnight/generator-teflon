@@ -1,422 +1,394 @@
 'use strict';
 
 const
-	_		= require( 'underscore' ),
-	fsp		= require( './fs-promise' ),
-	fs		= require( 'fs' ),
-	rsvp	= require( 'rsvp' ),
-	log		= require( 'log' ),
-	pth		= require('path'),
-	glob	= ( (glob)=> {
 
-		function globPromise ( path , options ) {
+	/* Custom Modules */
 
-			return new rsvp.Promise( ( resolve , reject ) => {
-
-				log.runningTask( 'render' , 'sass' , path , __filename);
-
-				glob( path , options , ( error , files ) => {
-
-					if ( error ) reject( error );
-					else resolve( files );
-
-				} );
-
-			} );
-
-		};
-
-		return function ( includes , excludes , options ) {
-
-			let acceptableFiles = [];
-
-			options = !!options ? options : {};
-
-			return globPromise( includes )
-				.then( files => {
-					acceptableFiles = files;
-					return globPromise( excludes );
-				} )
-				.then( files => {
-
-					return _.filter( acceptableFiles , file => {
-
-						return !_.contains( files , file );
-
-					} );
-
-				} )
-				.catch ( error => { log.error( `Failed to glob files includes : ${includes}, excludes : ${excludes}` , __filename , error ); process.exit(1); } );
+	glob		= require( './_glob.js' ),
+	postcss		= require( './_postcss.js' ),
+	sass		= require( './_sass.js' ),
+	babel		= require( './_babel.js' ),
+	jshint		= require( './_jshint.js' ),
+	vulcanize	= require( './_vulcanize.js' ),
+	uglifyjs	= require( './_uglifyjs.js' ),
+	cleanCSS	= require( './_cleanCSS.js' ),
 
 
 
-		};
+	/* Build Modules */
 
-	})(require('glob')),
+	rsvp	= require('rsvp'),
+	log		= require('log'),
+	_		= require('underscore'),
+	express	= require ( 'express' ),
+	path	= require( 'path' ),
+	fs		= require( 'fs-extra-promise' ),
+	jade	= require( 'jade' ).render,
+	watcher	= require( 'node-watch' ),
+
+
+	/* Arguments Parsing */
+
+	args = process.argv.slice(2),
+	compress	= _.contains( args , '--c' ) || _.contains( args , '--compress' ),	// --c or --compress to compress files
+	serve		= _.contains( args , '--s' ) || _.contains( args , '--server' ),	// --c or --compress to compress files
+	watch		= _.contains( args , '--w' ) || _.contains( args , '--watch' ),		// --w or --watch to watch for file changes and rerun
+	port = ( ( ) => {
+		const port = (_.find( args , ( arg ) => { return arg.search('--p=') !== -1 } ));
+		if ( _.isUndefined( port ) ) return process.env.PORT ? process.env.PORT : 8000;
+		else return Number( port.substr( 3 ) );
+	} )(),
+	address = ( ( ) => {
+		const address = (_.find( args , ( arg ) => { return arg.search('--a=') !== -1 } ));
+		if ( _.isUndefined( address ) ) return '0.0.0.0';
+		else return address.substr( 3 );
+	} )(),
+
+
+	/* Common Paths Parsing */
 
 	src	= process.cwd() + '/source',
 	dst = process.cwd() + '/dist',
 	asm = process.cwd() + '/.assembly',
-	pck = process.cwd() + '/.packaged',
+	pck = process.cwd() + '/.packaged';
 
-	htmlMin	= require( 'html-minifier' ).minify,
-	jade	= require( 'jade' ).render,
-	sass	= (()=>{
+function compileScript ( source , dest ) {
 
-		const sass = require('node-sass').render;
+	log.runningTask( 'compileScript ' , 'node' , source);
 
-		return function ( options ) {
+	return fs.readFileAsync( source , 'utf8' )
+		.catch( error => {
+			log.error ( `compileScript has failed to read ${source}` , error );
+			!watch && process.exit(1);
+		} )
+		.then ( buffer => {
 
-			return new rsvp.Promise( ( resolve , reject ) => {
+			jshint.lint( buffer , source );
 
-				log.runningTask( 'render' , 'sass' , path , __filename);
-
-				sass( options , ( error , buffer ) => {
-
-					if ( error ) reject( error );
-					else resolve( buffer );
-
-				} );
-
-			} );
-
-		};
-
-	})(),
-	postcss	= (()=>{
-
-		const
-			autoprefixer = require('autoprefixer'),
-			cssnano = require('cssnano'),
-			postcss = require('postcss'),
-			csscomb = ( function ( Comb ) {
-
-				var comb = new Comb();
-
-				comb.configure( require ( `${__dirname}/.csscomb.json` ) );
-
-				return comb;
-
-			} )( require( 'csscomb' ) ),
-			parseMin	= postcss([ autoprefixer , cssnano ]),
-			parse		= postcss([ autoprefixer ]);
+			if ( compress ) {
+				return fs.outputFileAsync( dest , babel( buffer , source ) )
+					.then( () => { return uglifyjs( dest ); } );
+			} else {
+				return fs.outputFileAsync( dest , babel( buffer , source ) );
+			}
 
 
-		return function postcss ( path , buffer , compress ) {
+		} )
+		.catch( error => {
+			log.error ( `compileScript has failed to write ${dest}` , error );
+			!watch && process.exit(1);
+		} );
 
-			log.runningTask( [ (!!compress ? 'cssnano' : 'csscomb' ) , 'autoprefixer' ] , 'postcss' , path , __filename);
+}
 
-			return ( !!compress ? parseMin : parse ).process( buffer )
-				.then ( result => { return !!compress ? result.css : csscomb(result.css); } )
-				.catch ( error => { log.error( 'Failed to process css' , __filename , error ); process.exit(1); } );
+function compileStyle ( source , destination , compress ) {
 
-		};
+	log.runningTask( 'compileStyle' , 'node' , source);
 
-	}),
+	return fs.readFileAsync( source , 'utf8' )
+		.catch( error => {
+			log.error ( `compileStyle => readFileAsync has failed to parse ${source}` , error );
+			!watch && process.exit(1);
+		} )
+		.then( buffer => {
+			if ( path.extname( source ) === '.css' ) {
+				return buffer;
+			} else {
+				return sass( { data : buffer, outputStyle : 'nested' } , source )
+			}
+		} )
+		.catch( error => {
+			log.error ( `compileStyle => sass has failed to parse ${source}` , error );
+			!watch && process.exit(1);
+		} )
+		.then ( buffer => {
+			buffer = path.extname( source ) === '.css' ?
+				buffer : buffer.css;
+			return postcss ( source , buffer , compress );
+		} )
+		.catch( error => {
+			log.error ( `compileStyle => postcss has failed to parse ${source}` , error );
+		} )
+		.then ( buffer => {
+			if ( compress ) {
+				return fs.outputFileAsync( destination , buffer )
+					.then( () => { return cleanCSS( destination ); } );
+			} else {
+				return fs.outputFileAsync( destination , buffer );
+			}
+		} )
+		.catch( error => {
+			log.error ( `compileStyle has failed to parse ${source}` , error );
+			!watch && process.exit(1);
+		} );
 
-	jshint = (()=>{
+}
 
-		const jshint = require ( 'jshint' ).JSHINT;
+function compileJade ( source , dest , compress ) {
 
-		return function jshint ( buffer , path ) {
+	log.runningTask( 'compileJade' , 'node' , source);
 
-			log.runningTask( 'JSHINT' , 'jshint' , path , __filename);
+	return fs.readFileAsync( source , 'utf8' )
+		.then ( buffer => { return fs.outputFileAsync( dest , jade( buffer , { pretty : !!compress ? false : '\t' , filename : source } ) );  } )
+		.catch( error => {
+			log.error ( `compileTemplate has failed to parse ${source}` , error );
+			!watch && process.exit(1);
+		} );
 
-			try {
+}
 
-				jshint( buffer , { esnext : true , undef : true , predef : [ '_' , 'Polymer' ] } );
+function prepareModuleAssembly ( source , compress ) {
 
-				const data = jshint.data();
+	log.runningTask( 'prepareModuleAssembly' , 'node' , source);
 
-				if ( (_.isArray( data.errors ) && data.errors.length > 0) ||
-					 (_.isArray( data.warnings ) && data.warnings.length > 0) ||
-					 (_.isArray( data.unused ) && data.unused.length > 0) ) {
+	return fs.isDirectoryAsync( source )
+		.then( isDirectory => {
 
-					_.isArray( data.unused ) && _.each( data.unused , variable => {
+			if ( isDirectory ) {
 
-						log.warning( `JSHint discovered an unused variable named ${variable.name} in ${path}` , `line ${variable.line}, char ${variable.character}` );
+				return fs.readdirAsync( source )
+					.then( files => {
+						return rsvp.all( _.chain(files)
+							.filter( file => {
+								return file.search('.DS_Store') === -1 &&
+									file.search('global') === -1 &&
+									file.search('media') === -1;
+							}  )
+							.map( file => { return prepareModuleAssembly( `${source}/${file}` , compress ) } )
+							.value() );
+					} )
+					.catch( error => {
+						log.error ( `prepareModuleAssembly has failed to parse dir ${source}` , error );
+						!watch && process.exit(1);
+					} );
 
-					});
+			} else {
 
-					_.isArray( data.warnings ) && _.each( data.warnings , warning => {
+				const
+					fileEnding = path.extname( source ),
+					pathPosition = source.search('/elements') + 9,
+					destination = pathPosition > 9 ? `${asm}/elements/${source.substring(pathPosition)}` : `${asm}/elements/${path.basename(source)}`;
 
-						log.warning(	`JSHint discovered the issue "${warning.reason}" in ${path}`,
-											`line  ${warning.line}, char ${warning.character}`,
-											{ issue : warning.raw , code : warning.evidence } );
+				if ( fileEnding === '.js' ) {
 
-					});
+					return compileScript( source , destination , compress );
 
-					_.isArray( data.errors ) && _.each( data.errors , error => {
+				} else if ( fileEnding === '.sass' || fileEnding === '.scss' ) {
 
-						log.warning(	`JSHint discovered the error " ${error.reason}" in ${path}`,
-											`line  ${error.line}, char ${error.character}`,
-											{ issue : error.raw , code : error.evidence } );
+					return compileStyle( source , destination.replace( fileEnding , '.css' ) , compress );
 
-					});
+				} else if ( fileEnding === '.css' ) {
 
-					log.error( `JSHint has found issues with ${path}` , __filename );
+					return compileStyle( source , destination , compress );
 
-					process.exit(1);
+				} else if ( fileEnding === '.jade' ) {
+
+					return compileJade( source , destination.replace( '.jade' , '.html' ) , compress );
+
+				} else if ( fileEnding === '.html' ) {
+
+					return fs.copyAsync( source , destination );
 
 				}
 
-			} catch ( error ) {
-
-				log.error( `JSHint has failed to parse the buffer for ${path}` , __filename );
-
-				process.exit(1);
-
 			}
-
-		};
-
-	})(),
-
-	babel = (()=>{
-
-		const babel = require ( 'babel-core' ).transform;
-
-		return function babel ( buffer, path ) {
-
-			log.runningTask( 'transform' , 'babel' , path , __filename);
-
-			try { return babel( buffer , { presets : ['es2015'] } ).code; }
-			catch ( error ) {
-
-				log.error( `babel has failed to parse the buffer for ${path}` , __filename , error );
-
-				process.exit(1);
-
-			}
-
-		};
-
-	})(),
-
-	vulcanize = ((Vulcanize)=>{
-
-
-		return function vulcanizer ( path ) {
-			
-			log.runningTask( 'process' , 'vulcanize' , path , __filename);
-			return glob( `${pck}/*/*.html` , `${pck}/core/*.html` )
-				.then ( excludes => {
-
-					const vulcan = new Vulcanize({
-						excludes,
-						inlineScripts : true,
-						inlineCss : true,
-						inputUrl : path
-					});
-
-					return new rsvp.Promise( ( resolve , reject ) => {
-
-						vulcan.process( path , ( error , buffer ) => {
-
-							if ( error ) reject( error );
-							else resolve( buffer );
-
-						} );
-
-					} );
-
-				})
-
-		};
-
-	})(require('vulcanize'));
-
-function compileAll ( compress ) {
-
-	log.runningTask( 'compileAll' , 'node' , `${src}/elements` , __filename);
-
-	return projectCleanup()
-		.then( () => { return fsp.readdir( `${src}/elements` ); } )
-		.then ( elementTypes => {
-
-			return rsvp.all( _.chain( elementTypes )
-				.map( elementType => {
-
-					return _.map( fs.readdirSync( `${src}/elements/${elementType}` ) , file => {
-
-						if ( fs.lstatSync( `${src}/elements/${elementType}/${file}` ).isDirectory() ) {
-
-							return compileExploded( elementType , file , compress );
-
-						} else{
-
-							return compileStandard( elementType , file , compress );
-
-						}
-
-					} );
-
-				} ).flatten().value() );
-
 
 		} )
-		.then ( () => { return compilePages( compress ); } )
-		.then ( () => { return compileProject(); } )
-		//.then ( () => { return projectCleanup(); } )
-		.then ( () => { return copyMedia( compress ); } )
-		.catch ( error => { log.error( 'Failed to build' , __filename , error ); process.exit(1); } );
+		.catch( error => {
+			log.error ( `prepareModuleAssembly has failed to parse file ${src}` , error );
+			!watch && process.exit(1);
+		} );
 
-};
+}
 
-function compileStandard ( type , file , compress ) {
+function prepareModulePackaging ( assembly , packaging ) {
 
-	const
-		fileEnding	= pth.extname( file ),
-		templateSrc	= `${src}/elements/${type}/${file}`,
-		templateDst	= `${pck}/${type}/${file}`,
-		moduleName	= `${type}/${file}`;
+	log.runningTask( 'prepareModulePackaging' , 'node' , assembly);
 
-	log.runningTask( 'compileStandard' , 'node' , templateSrc , __filename);
+	return glob( `${assembly}/elements/**/*.html` )
+		.then ( modulePaths => {
 
-	return fsp.readfile( templateSrc )
-		.then ( buffer => { return fileEnding === '.html' ? buffer : jade( buffer , { pretty : !!compress ? false : '\t' , filename : templateSrc } ) } )
-		.then ( buffer => {
-			return fsp.outputFile( templateDst , htmlMin( buffer , {
-				removeComments : !!compress,
-				collapseWhitespace : !!compress,
-				collapseBooleanAttributes : true,
-				removeRedundantAttributes : true,
-				removeEmptyAttributes : true,
-				caseSensitive : true,
-				minifyJS : !!compress,
-				minifyCSS : !!compress,
-				quoteCharacter : "'",
+			modulePaths = _.filter( modulePaths , modulePath => {
+				return path.dirname( path.dirname( modulePath ) ) === `${assembly}/elements` || modulePath.search( 'index.html' ) !== -1;
+			} );
+
+			return rsvp.all( _.map( modulePaths , modulePath => {
+
+				return vulcanize( modulePath  )
+					.then( buffer => {
+						return fs.outputFileAsync( modulePath.search( 'index.html' ) !== -1 ?
+								(`${ path.dirname(modulePath) }.html`).replace( '.assembly' , '.packaged' ) :
+								modulePath.replace( '.assembly' , '.packaged' ),
+							buffer );
+					} )
+					.catch( error => {
+						log.error( `Failed to vulcanize ${modulePath}` );
+						!watch && process.exit(1);
+					} );
+
+			} ) );
+
+		} )
+		.then ( () => {
+			return rsvp.all([
+				fs.copyAsync( `${assembly}/scripts` , `${packaging}/scripts` ),
+				fs.copyAsync( `${assembly}/styles` , `${packaging}/styles` ),
+				fs.copyAsync( `${assembly}/index.html` , `${packaging}/index.html` )
+			]);
+		} )
+		.catch ( error => {
+			log.error ( `prepareModulePackaging has failed to parse ${assembly}` , error );
+			!watch && process.exit(1);
+		} );
+
+}
+
+function compileProject ( packaging , destination ) {
+
+	let externalFiles = [];
+
+	return glob( `${packaging}/elements/**` , `${packaging}/elements/core/**` )
+		.catch( error => { log.error( 'compileProject => glob has failed' , error ); } )
+		.then( excludedPaths => {
+			externalFiles = _.filter( excludedPaths , modulePath => { return !fs.isDirectorySync( modulePath ); } );
+			return vulcanize( `${packaging}/index.html` , externalFiles )
+				.then( buffer => { return fs.outputFileAsync( `${destination}/index.html` , buffer ); } )
+				.catch( error => { log.error( 'compileProject => vulcanizer has failed' , error ); } );
+		} )
+		.then( () => {
+			return rsvp.all( _.map( externalFiles , file => {
+				return fs.copyAsync( file , file.replace( packaging , destination ) )
 			} ) );
 		} )
-		.catch ( error => { log.error( `Failed to compile module ${moduleName}` , __filename , String(error) ); process.exit(1); } );
+		.catch( error => { log.error( 'compileProject has failed' , error ); } );
 
-};
+}
 
-function compileExploded ( type , name , compress ) {
+function projectCleanup ( assembly , packaging ) { return rsvp.all([ fs.removeAsync(assembly) , fs.removeAsync(packaging) ]); }
+
+function copyMedia( src , dest  ) {
+
+	log.runningTask( 'copyMedia' , 'node' , src);
+
+	return fs.removeAsync( `${dest}/media` )
+		.then( () => { return fs.copyAsync( `${src}/media` , `${dest}/media` ) } )
+		.catch( error => {
+			log.error ( `copyMedia has failed to parse ${src}` , error );
+			!watch && process.exit(1);
+		} );
+
+}
+
+function teflonApplicationCompiler ( ) {
+
+	log.starting('Teflon Application Compiler');
+
+	return projectCleanup( asm , pck )
+		.catch( error => {
+			log.error ( `The build => projectCleanup has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return compileJade( `${src}/index.jade` , `${asm}/index.html` , compress ); } )
+		.catch( error => {
+			log.error ( `The build => compileJade has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return glob(`${src}/scripts/**`) } )
+		.catch( error => {
+			log.error ( `The build => glob has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( scriptsPaths => {
+			return rsvp.all( _.chain( scriptsPaths )
+				.filter( scriptPath => { return !fs.isDirectorySync( scriptPath ); } )
+				.map( scriptPath => { return compileScript( scriptPath , `${asm}/scripts/${path.basename(scriptPath)}` ); } )
+				.value() );
+		} )
+		.catch( error => {
+			log.error ( `The build => compileScripts has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return glob(`${src}/styles/**`) } )
+		.catch( error => {
+			log.error ( `The build => glob has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( stylesPaths => {
+			return rsvp.all( _.chain( stylesPaths )
+				.filter( stylePath => { return !fs.isDirectorySync( stylePath ); } )
+				.map( stylePath => { return compileStyle( stylePath , `${asm}/styles/${path.basename(stylePath)}` ); } )
+				.value() );
+		} )
+		.catch( error => {
+			log.error ( `The build => compileStyles has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return prepareModuleAssembly( `${src}/elements` , false ); } )
+		.catch( error => {
+			log.error ( `The build => prepareModuleAssembly has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return prepareModulePackaging( asm , pck ); } )
+		.catch( error => {
+			log.error ( `The build => prepareModulePackaging has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return compileProject( pck , dst ) } )
+		.catch( error => {
+			log.error ( `The build => compileProject has failed` , error );
+			!watch && process.exit(1);
+		} )
+		.then( () => { return projectCleanup( asm , pck ) } )
+		.then( () => { return copyMedia( src , dst ) } )
+		.then( () => { log.success( 'Finished Teflon Compilation' ); } )
+		.catch( error => {
+			log.error ( `The build has failed` , error );
+			!watch && process.exit(1);
+		} );
+}
+
+
+function teflonServer ( ) {
 
 	const
-		jadeSrc		= `${src}/elements/${type}/${name}/index.jade`,
-		jadeDst		= `${asm}/${type}/${name}/index.html`,
-		sassSrc		= `${src}/elements/${type}/${name}/style.scss`,
-		sassDst		= `${asm}/${type}/${name}/style.css`,
-		jsSrc		= `${src}/elements/${type}/${name}/script.js`,
-		jsDst		= `${asm}/${type}/${name}/script.js`,
-		moduleDst	= `${pck}/${type}/${name}.html`,
-		moduleName	= `${type}/${name}`;
+		app = express(),
+		server = app.listen( port , address , ( ) => {
 
-	log.runningTask( 'compileExploded' , 'node' , moduleName , __filename);
+			log.startingServer(
+				server.address().address,
+				server.address().port,
+				'express' );
 
-	return fsp.readfile( jadeSrc )
-		.then ( buffer => {
-			return fsp.outputFile( jadeDst , jade( buffer , { pretty : !!compress ? false : '\t' , filename : jadeSrc } ) );
-		} )
-		.then ( () => {
-			return sass({
-				file : sassSrc,
-				outputStyle : !!compress ? 'compressed' : 'nested',
-			});
-		} )
-		.then ( buffer => { return postcss( sassSrc , buffer , compress ); } )
-		.then ( buffer => { return fsp.outputFile( sassDst , buffer ); } )
-		.then ( () => { return fsp.readfile( jsSrc ) } )
-		.then ( buffer => {
-			jshint( buffer , jsSrc );
-			return fsp.outputFile( jsDst , babel( buffer , jsSrc ) );
-		} )
-		.then ( () => {
-			return vulcanize( jadeDst );
-		} )
-		.then ( buffer => {
-			return fsp.outputFile( moduleDst , buffer );
-		} )
-		.catch ( error => { log.error( `Failed to compile module ${moduleName}` , __filename , error ); process.exit(1); } );
+			app.use( '/' , express.static( dst ) );
 
-};
+	} );
 
-function compilePage ( page , compress ) {
+}
 
-	log.runningTask( 'compilePage' , 'node' , `${src}/${page}` , __filename);
+function findFirstOrderModule ( filePath ) {
 
-	const
-		fileEnding	= pth.extname( page ),
-		name		= pth.basename( page , '.jade' ),
-		pageSrc		= `${src}/${page}`,
-		pageDst		= `${pck}/${name}.html`;
+	if ( filePath.search( `${src}/elements` ) !== -1 ) {
+		while ( path.dirname( path.dirname( filePath  ) ) !== `${src}/elements` ) {
+			filePath = path.dirname( filePath );
+		}
+	} else {
+		return false;
+	}
 
-	return fsp.readfile( pageSrc )
-		.then ( buffer => { return fsp.outputFile( pageDst , jade( buffer , { pretty : !!compress ? false : '\t' , filename : pageSrc } ) ); } )
-		.catch ( error => { log.error( `Failed to compile page ${name}` , __filename , error ); process.exit(1); } );
+	return { path : filePath , core : filePath.search( `${src}/elements/core` ) !== -1 };
 
-};
+}
 
-function compilePages ( compress ) {
+function watchProjectFiles ( ) {
 
-	log.runningTask( 'compilePages' , 'node' , src , __filename);
+	watcher( src , filename => {
+		teflonApplicationCompiler();
+		console.log( findFirstOrderModule( filename ) );
+	} );
 
-	return fsp.readdir( `${src}` )
-		.then ( files => {
+}
 
-			const pages = _.filter( files , file => { return !( fs.lstatSync( `${src}/${file}` ).isDirectory() ); } );
+teflonApplicationCompiler();
 
-			return rsvp.all( _.map( pages , page => { return compilePage( page , compress ) } ) );
-
-		} )
-		.catch ( error => { log.error( 'Failed to compile pages' , __filename , error ); process.exit(1); } );
-
-};
-
-function compileProject ( ) {
-
-	log.runningTask( 'compileProject' , 'node' , pck , __filename);
-
-	return fsp.readdir( `${pck}` )
-		.then ( files => {
-
-			return rsvp.all ( _.chain( files )
-				.filter ( file => { return file !== 'core'; } )
-				.map ( file => {
-
-					if ( fs.lstatSync( `${pck}/${file}` ).isDirectory() ) {
-
-						log.copying( `${pck}/${file}` , `${dst}/${file}` , __filename);
-
-						return fsp.copy( `${pck}/${file}` , `${dst}/${file}` , { clobber : true } );
-
-					} else {
-
-						log.runningTask( 'vulcanize' , 'node' , `${pck}/${file}` , __filename);
-
-						return vulcanize( `${pck}/${file}` )
-							.then ( buffer => { return fsp.outputFile( `${dst}/${file}` , buffer ); } )
-							.catch ( error => { log.error( `Failed to compile the page ${file}` , __filename , error ); process.exit(1); } );
-
-					}
-
-				} ).value() );
-
-		} )
-		.catch ( error => { log.error( `Failed to compile the project` , __filename , error ); process.exit(1); } );
-
-
-};
-
-function projectCleanup ( ) {
-
-	return rsvp.all([
-		fsp.remove(asm),
-		fsp.remove(pck),
-	]);
-
-};
-
-function copyMedia ( compress ) {
-
-	return fsp.remove( `${dst}/media` )
-		.then( () => {
-			return fsp.copy( `${src}/media` , `${dst}/media` , { clobber : true } )
-		} )
-		.catch ( error => { log.error( 'Failed to copy over media' , __filename , error ); process.exit(1); } );
-
-};
-
-compileAll();
+if ( serve ) teflonServer();
+if ( watch ) watchProjectFiles();

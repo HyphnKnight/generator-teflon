@@ -48,7 +48,7 @@ const
 	/* Common Paths Parsing */
 
 	src	= process.cwd() + '/source',
-	dst = process.cwd() + '/dist',
+	dst = process.cwd() + '/app',
 	asm = process.cwd() + '/.assembly',
 	pck = process.cwd() + '/.packaged';
 

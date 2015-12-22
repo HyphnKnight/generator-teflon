@@ -1,0 +1,11 @@
+mixin htmlImports( dir , names )
+	-for ( nameIndex in names )
+		link(rel='import' href='elements/'+dir+'/'+names[nameIndex]+'.html')
+
+mixin scriptImports( dir , names )
+	-for ( nameIndex in names )
+		script(src=dir+'/'+names[nameIndex]+'.js')
+
+mixin cssImports( dir , names )
+	-for ( nameIndex in names )
+		link(rel='stylesheet' type="text/css" href=dir+'/'+names[nameIndex]+'.css')

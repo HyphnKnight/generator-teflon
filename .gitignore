@@ -1,3 +1,8 @@
+# Project Folder ( new downloads should rebuild for less of a chance of curroption )
+app
+.packaged
+.assembly
+
 # Logs
 logs
 *.log
@@ -25,7 +30,3 @@ build/Release
 # Dependency directory
 # https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git
 node_modules
-
-# Temp Folders
-.assembly
-.packaged

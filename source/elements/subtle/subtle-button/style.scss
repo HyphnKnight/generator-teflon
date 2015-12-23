@@ -17,7 +17,11 @@
 	letter-spacing : 0.1em;
 	text-transform : uppercase;
 
-	color : black;
+	color : --primary-color;
+
+	--primary-color : black;
+	--secondary-color : white;
+	--error-color : #ac0000;
 	.border {
 		position : absolute;
 		top : 0;
@@ -32,12 +36,12 @@
 		        transform : scale3d(0, 0, 0);
 
 		opacity : 0;
-		border : 1px solid black;
+		border : 1px solid --primary-color;
 	}
 	&.error {
 		cursor : default;
 
-		color : #ac0000;
+		color : --error-color;
 		.border {
 			opacity : 0 !important;
 		}
@@ -57,8 +61,8 @@
 		opacity : 1;
 	}
 	&:active {
-		color : white;
-		background-color : black;
+		color : --secondary-color;
+		background-color : --primary-color;
 		.border {
 			-webkit-transform : scale3d(1, 1, 1);
 			        transform : scale3d(1, 1, 1);

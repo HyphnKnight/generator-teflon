@@ -25,12 +25,6 @@ Polymer({
 			value : false
 		},
 
-		invertColor : {
-			type : Boolean,
-			value : false,
-			observer : '_invertColor'
-		},
-
 		autowidth : {
 			type : Boolean,
 			value : false

@@ -30,7 +30,6 @@ Polymer({
 
 	ready : function ( ) {
 		this._error();
-		this._invertColor();
 	},
 
 	_error : function ( ) {

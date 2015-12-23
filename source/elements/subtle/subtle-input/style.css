@@ -17,12 +17,16 @@ input {
 	margin-top : 25px;
 	padding : 0 20px;
 
-	color : black;
-	border : 1px solid black;
+	color : --primary-color;
+	border : 1px solid --primary-color;
 	background-color : transparent;
+
+	--primary-color : black;
+	--secondary-color : white;
+	--error-color : #ac0000;
 }
 :host.error {
-	border-color : #ac0000 !important;
+	border-color : --error-color !important;
 }
 :host label {
 	font-size : 12px;
@@ -54,7 +58,7 @@ input {
 	-webkit-transition : 0.2s ease all;
 	        transition : 0.2s ease all;
 
-	color : black;
+	color : --primary-color;
 	border : none;
 	background-color : transparent;
 }
@@ -69,7 +73,7 @@ input {
 	        transform : translate3d(0, -28px, 0);
 }
 :host input:focus {
-	color : white;
+	color : --secondary-color;
 }
 :host input:focus + label {
 	-webkit-transform : translate3d(0, -28px, 0);
@@ -104,18 +108,5 @@ input {
 	        transform-origin : left center;
 
 	opacity : 0;
-	background-color : black;
-}
-:host.invert {
-	color : white;
-	border-color : white;
-}
-:host.invert input {
-	color : white;
-}
-:host.invert input:focus {
-	color : black;
-}
-:host.invert .bg {
-	background-color : black;
+	background-color : --primary-color;
 }

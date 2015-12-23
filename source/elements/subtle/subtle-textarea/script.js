@@ -14,12 +14,6 @@ Polymer({
 			value : 'text'
 		},
 
-		invert : {
-			type : Boolean,
-			value : false,
-			observer : '_invertColor'
-		},
-
 		error : {
 			type : Boolean,
 			value : false,

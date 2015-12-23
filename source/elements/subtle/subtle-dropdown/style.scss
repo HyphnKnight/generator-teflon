@@ -7,13 +7,14 @@
 	height : 30px;
 	margin-top : 20px;
 
-	color : black;
-	border : 1px solid black;
+	color : --primary-color;
+	border : 1px solid --primary-color;
 	background-color : transparent;
-	&.invertColor {
-		color : white;
-		border-color : white;
-	}
+
+	--primary-color : black;
+	--secondary-color : white;
+	--error-color : #ac0000;
+
 	& .arrow {
 		position : absolute;
 		top : 12px;
@@ -28,7 +29,7 @@
 		        transform : rotateZ(-45deg) translateZ(0);
 
 		opacity : 0;
-		border-color : black;
+		border-color : --primary-color;
 		border-right : 1px solid;
 		border-bottom : 1px solid;
 	}
@@ -70,27 +71,8 @@
 			        transform-origin : top center;
 
 			opacity : 0;
-			border : 2px solid black;
-			background-color : black;
-		}
-	}
-	&.invertColor {
-		.bg {
-			border-color : white;
-			background-color : white;
-		}
-		.arrow {
-			border-color : white;
-		}
-		&.hover .arrow {
-			border-color : white !important;
-			background-color : white;
-		}
-		&.selected .arrow {
-			color : white !important;
-		}
-		&.hover subtle-dropdown-option {
-			color : black !important;
+			border : 2px solid --primary-color;
+			background-color : --primary-color;
 		}
 	}
 	&.hover {
@@ -99,7 +81,7 @@
 			        transition : 0.2s ease opacity 0.15s, 0.2s ease transform;
 
 			opacity : 1;
-			border-color : white !important;
+			border-color : --secondary-color !important;
 		}
 		label {
 			-webkit-transform : translate3d(0, -28px, 0);
@@ -118,7 +100,7 @@
 			        transition : 0.2s ease opacity 0.15s, 0s linear max-height 0s;
 
 			opacity : 1;
-			color : white;
+			color : --secondary-color;
 		}
 	}
 	&.selected {
@@ -127,7 +109,7 @@
 			        transform : translate3d(0, 0, 0) rotateZ(-45deg);
 
 			opacity : 1;
-			border-color : black;
+			border-color : --primary-color;
 		}
 		label {
 			-webkit-transform : translate3d(0, -28px, 0);

@@ -18,7 +18,6 @@ Polymer({
 
 	ready : function ( ) {
 		this._reposition();
-		this._invertColor();
 	},
 
 	_reposition : function ( ) {

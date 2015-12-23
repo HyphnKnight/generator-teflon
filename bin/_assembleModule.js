@@ -38,23 +38,23 @@ module.exports = function assembleModule ( source , assembly , compress , fail )
 				const
 					fileEnding = path.extname( source ),
 					pathPosition = source.search('/elements') + 9,
-					destination = pathPosition > 9 ? `${assembly}/elements/${source.substring(pathPosition)}` : `${assembly}/elements/${path.basename(source)}`;
+					destination = pathPosition > 9 ? `${assembly}/elements${source.substring(pathPosition)}` : `${assembly}/elements/${path.basename(source)}`;
 
 				if ( fileEnding === '.js' ) {
 
-					return compile.script( source , destination , compress );
+					return compile.script( source , destination , compress , fail );
 
 				} else if ( fileEnding === '.sass' || fileEnding === '.scss' ) {
 
-					return compile.style( source , destination.replace( fileEnding , '.css' ) , compress );
+					return compile.style( source , destination.replace( fileEnding , '.css' ) , compress , fail );
 
 				} else if ( fileEnding === '.css' ) {
 
-					return compile.style( source , destination , compress );
+					return compile.style( source , destination , compress , fail );
 
 				} else if ( fileEnding === '.jade' ) {
 
-					return compile.jade( source , destination.replace( '.jade' , '.html' ) , compress );
+					return compile.jade( source , destination.replace( '.jade' , '.html' ) , compress , fail );
 
 				} else if ( fileEnding === '.html' ) {
 

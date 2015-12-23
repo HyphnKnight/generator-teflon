@@ -2,13 +2,12 @@ const
 	log		= require( 'log' ),
 	fs		= require( 'fs-extra-promise' ),
 	path	= require( 'path' ),
+	uglifyjs	= require( 'uglify-js' ),
 
 	postcss		= require( './_postcss.js' ),
 	sass		= require( './_sass.js' ),
 	babel		= require( './_babel.js' ),
 	jshint		= require( './_jshint.js' ),
-	uglifyjs	= require( './_uglifyjs.js' ),
-	cleanCSS	= require( './_cleanCSS.js' ),
 
 	jadeRender	= require( 'jade' ).render;
 
@@ -19,7 +18,7 @@ function script ( source , destination , compress , fail ) {
 
 	return fs.readFileAsync( source , 'utf8' )
 		.catch( error => {
-			log.error ( `compileScript has failed to read ${source}` , error );
+			log.error ( `compile.script has failed to read ${source}` , error );
 			fail && process.exit(1);
 		} )
 		.then ( buffer => {
@@ -27,16 +26,19 @@ function script ( source , destination , compress , fail ) {
 			jshint.lint( buffer , source );
 
 			if ( compress ) {
-				return fs.outputFileAsync( destination , babel( buffer , source ) )
-					.then( () => { return uglifyjs( destination ); } );
+
+				return fs.outputFileAsync( destination , uglifyjs.minify( babel( buffer , source ) , {fromString: true} ).code )
+
 			} else {
+
 				return fs.outputFileAsync( destination , babel( buffer , source ) );
+
 			}
 
 
 		} )
 		.catch( error => {
-			log.error ( `compileScript has failed to write ${destination}` , error );
+			log.error ( `compile.script has failed to write ${destination}` , error );
 			fail && process.exit(1);
 		} );
 
@@ -71,12 +73,7 @@ function style ( source , destination , compress , fail ) {
 			log.error ( `compile.style => postcss has failed to parse ${source}` , error );
 		} )
 		.then ( buffer => {
-			if ( compress ) {
-				return fs.outputFileAsync( destination , buffer )
-					.then( () => { return cleanCSS( destination ); } );
-			} else {
-				return fs.outputFileAsync( destination , buffer );
-			}
+			return fs.outputFileAsync( destination , buffer );
 		} )
 		.catch( error => {
 			log.error ( `compile.style has failed to parse ${source}` , error );

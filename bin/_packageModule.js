@@ -30,7 +30,7 @@ module.exports = function packageModule ( assembly , packaging , compress , fail
 							buffer );
 					} )
 					.catch( error => {
-						log.error( `Failed to vulcanize ${modulePath}` );
+						log.error( `Failed to vulcanize ${modulePath}` , error );
 						fail && process.exit(1);
 					} );
 

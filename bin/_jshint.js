@@ -9,7 +9,7 @@ function lint ( buffer , path ) {
 
 	try {
 
-		JSHINT( buffer , { esnext : true , undef : true , predef : ['console' , 'define' , '_' , 'Polymer' ] } );
+		JSHINT( buffer , { esnext : true , undef : true , predef : [ 'console' , 'define' , '_' , 'Polymer' , 'window' ] } );
 
 		const data = JSHINT.data();
 

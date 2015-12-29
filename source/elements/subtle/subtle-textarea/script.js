@@ -9,11 +9,6 @@ Polymer({
 			value : ''
 		},
 
-		type : {
-			type : String,
-			value : 'text'
-		},
-
 		error : {
 			type : Boolean,
 			value : false,

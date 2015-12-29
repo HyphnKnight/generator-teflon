@@ -1,0 +1,19 @@
+dom-module#subtle-calendar
+
+	template
+		link(rel='stylesheet' type="text/css" href='style.css')
+		#header
+			.arrow( on-click="_leftArrow" ontouchstart="" )
+			.title {{_parseDate( year , month , monthNames )}}
+			.arrow( on-click="_rightArrow" ontouchstart="" )
+		#dayLabels
+			each label in [ 'SU' , 'M' , 'TU' , 'W' , 'TH' , 'F' , 'SA' ]
+				.dayLabel=label
+		.dates
+			- var daysLeftInMonth = 1
+			while daysLeftInMonth < 32
+				.day(ontouchstart="")=daysLeftInMonth
+					.border
+				- daysLeftInMonth++
+
+	script(src='script.js')

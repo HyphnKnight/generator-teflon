@@ -4,25 +4,39 @@ Polymer({
 
 	properties: {
 
-		label : {
-			type : String,
-			value : ''
-		},
+		// Data Properties
 
 		value : {
 			type : String,
-			notify: true
+			notify: true,
+			observer : '_valueChange'
 		},
 
 		options : {
 			type : Array,
-			value : [],
+			value : [ 'Hat' , 'Belt' , 'Tie' ],
 			observer : '_responsiveDom'
 		},
 
+		// State Properties
+
 		error : {
 			type : Boolean,
-			value : false
+			value : false,
+			observer : '_stateChange'
+		},
+
+		disable : {
+			type : Boolean,
+			value : false,
+			observer : '_stateChange'
+		},
+
+		// Display Properties
+
+		label : {
+			type : String,
+			value : 'Place Holder'
 		},
 
 		autowidth : {
@@ -39,32 +53,35 @@ Polymer({
 
 	ready : function ( ) {
 		this._responsiveDom();
-		this._invertColor();
+	},
+
+	_valueChange : function ( ) {
+		this.fire( 'valueChange' , this.value );
+	},
+
+	_stateChange : function ( ) {
+		this.toggleClass( 'error' , this.error && !this.disable );
+		this.toggleClass( 'disabled' , this.disable );
 	},
 
 	_responsiveDom : function ( ) {
+
 		this.toggleClass( 'hover' , false );
 		this.toggleClass( 'selected' , false );
 
 		Polymer.dom.flush();
 
-		var qOptions = Polymer.dom(this.root.host).node.querySelectorAll('subtle-dropdown-option');
+		var qOptions = Polymer.dom( this.root.host ).node.querySelectorAll( 'subtle-dropdown-option' );
 
 		_.each( qOptions , option => {
 
 			option.addEventListener( 'selected' , e => {
-				this.options = _.chain( this.options)
-					.map(option => {
-						option.selected = option.value === e.detail.value;
-						return option;
-					} )
-					.sortBy( option => { return option.selected ? 0 : 1; } )
-					.value();
+				this.options = _.sortBy( this.options , option => { return option === e.detail ? 0 : 1; } );
 				this.toggleClass( 'selected' , true );
 				this.toggleClass( 'hover' , false );
 				this.transform( 'translate3d(0px,0px,0px) rotateZ(-45deg)' , this.$$('.arrow') );
-				this.value = e.detail.value;
-				this.fire( 'selected' , e.detail.value );
+				this.value = e.detail;
+				this.fire( 'selected' , e.detail );
 			} );
 
 			option.addEventListener( 'hoverOver' , e => {
@@ -96,10 +113,6 @@ Polymer({
 	_hoverOff : function () {
 		this.toggleClass( 'hover' , false );
 		this.transform( 'translate3d(0,0,0) rotateZ(-45deg)' , this.$$('.arrow') );
-	},
-
-	_invertColor : function ( ) {
-		this.toggleClass( 'invertColor' , this.invertColor );
 	}
 
 });

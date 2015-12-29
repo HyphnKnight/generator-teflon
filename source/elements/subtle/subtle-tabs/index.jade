@@ -1,0 +1,13 @@
+dom-module#subtle-tabs
+
+	template
+		link(rel='stylesheet' type="text/css" href='style.css')
+		#back
+			template(is="dom-repeat" items="{{tabs}}" as="tab")
+				.possible( on-click="_selectTab" data-index="{{index}}" ontouchstart="" ) {{tab}}
+		#lens
+			#front
+				template(is="dom-repeat" items="{{tabs}}" as="tab")
+					.possible( ontouchstart="" ) {{tab}}
+
+	script(src='script.js')

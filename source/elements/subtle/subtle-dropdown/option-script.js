@@ -11,7 +11,7 @@ Polymer({
 		},
 
 		option : {
-			type : Object
+			type : String
 		}
 
 	},

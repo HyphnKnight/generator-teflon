@@ -1,7 +1,0 @@
-dom-module#slight-ratio-chart
-	link(rel="import" href="slight-ratio-chart-item.html")
-	template
-		template(is="dom-repeat" items="{{data}}")
-			slight-ratio-chart-item( name="{{data.name}}" value="{{data.value}}" max="{{total}}" )
-
-	script(src="./script.js")

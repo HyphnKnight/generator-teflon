@@ -15,7 +15,16 @@ Teflon is a build systemn that seeks to solve the limited nature of polymer cons
 1. You should also edit the content of the following files.
   * The existing index page source is the `source/index.jade` file, you can delete it and write your index page or not have one, however if you do keep this page I would suggest changing the title, description and taking a look on the other meta tags that are there and change them incase they reference Teflon.
   * You should change the values of the most of the properties in the `package.json` file with the exception of main, scripts, and dependencies.
+
 ## Getting Started
+To use Teflon, run the command `node bin/build.js` that runs the build.js file with no arguments which will produce an optimized uncompressed production ready build in the `app` folder. The following are Teflon's arguments which can be used to unlock additional functionality. They don't step on each others toes so can be used concurrently.
+* Compress your files with the flag `--c` or `--compress`.
+* Run a development server to serve your build folder with the flag `--s` or `--server`.
+  * Use a custom port with the flag `--p=XXXX`.
+  * Use a custom address with the flag `--a=xxx.xx.xxx.x`.
+* Watching can be activated with `--w` or `--watch` and will trigger content appropriate rebuilds when your files change.
+* To prevent the intermediate build folders from being erased run Teflon with the flag `--d` or `--debug`.
+
 
 ## Workflow
 

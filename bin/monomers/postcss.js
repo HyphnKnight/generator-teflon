@@ -1,10 +1,11 @@
 'use strict';
 
 const
-	log = require('log'),
-	autoprefixer = require( 'autoprefixer' ),
-	cssnano = require( 'cssnano' ),
-	postcss = require( 'postcss' ),
+	log				= require('log'),
+	autoprefixer	= require( 'autoprefixer' ),
+	cssnano			= require( 'cssnano' ),
+	postcss			= require( 'postcss' ),
+
 	csscomb = ( function ( Comb ) {
 
 		var comb = new Comb();
@@ -47,7 +48,7 @@ module.exports = function postcss ( path , buffer , compress ) {
 	log.processing( path , `${!!compress ? 'cssnano' : 'csscomb'} autoprefixer` );
 
 	return ( !!compress ? parseMin : parse ).process( buffer )
-		.then ( result => { return csscomb.processString(result.css); } )
+		.then ( result => { return result.css } )
 		.catch ( error => {
 			log.error( 'Failed to process css' , path , error );
 			process.exit(1);

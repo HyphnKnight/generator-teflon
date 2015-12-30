@@ -1,7 +1,7 @@
 const
-	log = require( 'log' ),
-	_ = require( 'underscore' ),
-	JSHINT = require ( 'jshint' ).JSHINT;
+	log		= require( 'log' ),
+	_		= require( 'underscore' ),
+	JSHINT	= require ( 'jshint' ).JSHINT;
 
 function lint ( buffer , path ) {
 

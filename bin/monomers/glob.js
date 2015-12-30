@@ -1,10 +1,10 @@
 'use strict';
 
 const
-	log = require('log'),
-	rsvp = require('rsvp'),
-	_ = require('underscore'),
-	glob = require('glob');
+	log		= require('log'),
+	rsvp	= require('rsvp'),
+	_		= require('underscore'),
+	glob	= require('glob');
 
 function globPromise ( path , options ) {
 

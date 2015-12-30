@@ -1,7 +1,6 @@
 const
 	log = require('log'),
 	rsvp = require('rsvp'),
-	glob = require('./_glob.js'),
 	_ = require ( 'underscore' ),
 	Vulcanize = require ( 'vulcanize' );
 

@@ -1,6 +1,6 @@
 const
-	log = require('log'),
-	transform = require ( 'babel-core' ).transform;
+	log			= require('log'),
+	transform	= require ( 'babel-core' ).transform;
 
 module.exports = function babel ( buffer, path ) {
 

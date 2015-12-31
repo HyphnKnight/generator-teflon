@@ -25,9 +25,20 @@ To use Teflon, run the command `node bin/build.js` that runs the build.js file w
 * Watching can be activated with `--w` or `--watch` and will trigger content appropriate rebuilds when your files change.
 * To prevent the intermediate build folders from being erased run Teflon with the flag `--d` or `--debug`.
 
+## How to create a page
+1. Create a file on the top level of the `source` folder with either a `.html` or a `.jade` ending.
+Thats it, once a file is created with either of those endings at the top level of the `source` folder it is processed as a top level page and the following are the steps its put through when Teflon decides to rebuild.
+1. Move the file from the `source` folder to the `.packaged` folder converting it to an html file if it was jade.
+1. Read all of the files from `source/styles` converting them if written in sass or scss into css and processsing them before adding them to `.packaged/styles`.
+1. Read all of the files from `source/scripts` testing them with jslint, then transpiling them using babel before writing the resulting files to `.packaged/scripts`.
+1. Read all of the top level html files in `.packaged` and vulcanize them only allowing in : the scripts in `.packaged/scripts`;  the styles `.packaged/scripts` and the elements in `.packaged/elements/core`.
 
-## Workflow
+### How to add styles & scripts
 
-### Pages
+### How to add elements
 
-### Elements
+## How to create an element
+
+### The pure element
+
+### The 'some assembly required' element

@@ -18,8 +18,9 @@ Teflon is a build system that seeks to solve the limited nature of polymer const
 
 ## Getting Started
 To use Teflon, run the command `node bin/build.js` that runs the build.js file with no arguments which will produce an optimized uncompressed production ready build in the `app` folder. The following are Teflon's arguments which can be used to unlock additional functionality. They don't step on each others toes so can be used concurrently.
+
 | Command | Effect |
-| -- | -- |
+| -------- | ---------- |
 |  `--c` or `--compress` | Compress your files |
 | `--s` or `--server` | Run a development server to serve your build folder with the flag |
 | `--p=XXXX` | Use a custom port |

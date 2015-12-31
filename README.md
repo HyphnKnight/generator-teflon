@@ -18,12 +18,14 @@ Teflon is a build system that seeks to solve the limited nature of polymer const
 
 ## Getting Started
 To use Teflon, run the command `node bin/build.js` that runs the build.js file with no arguments which will produce an optimized uncompressed production ready build in the `app` folder. The following are Teflon's arguments which can be used to unlock additional functionality. They don't step on each others toes so can be used concurrently.
-* Compress your files with the flag `--c` or `--compress`.
-* Run a development server to serve your build folder with the flag `--s` or `--server`.
-  * Use a custom port with the flag `--p=XXXX`.
-  * Use a custom address with the flag `--a=xxx.xx.xxx.x`.
-* Watching can be activated with `--w` or `--watch` and will trigger content appropriate rebuilds when your files change.
-* To prevent the intermediate build folders from being erased run Teflon with the flag `--d` or `--debug`.
+| Command | Effect |
+| -- | -- |
+|  `--c` or `--compress` | Compress your files |
+| `--s` or `--server` | Run a development server to serve your build folder with the flag |
+| `--p=XXXX` | Use a custom port |
+| `--a=xxx.xx.xxx.x` | Use a custom address |
+|  `--w` or `--watch` | Detect file changes and rebuild appropriately |
+|  `--d` or `--debug` | Prevents the intermediate build folders from being erased |
 
 ## How to create a page
 Create a file on the top level of the `source/` folder with either a `.html` or a `.jade` ending. Thats it, once a file is created with either of those endings at the top level of the `source/` folder it is processed as a page and the following . Its important to note that *any* jade or html file will be parsed as a page. If you want to have a jade file to import mixins, configurations or whatever, into your pages, place it in the `source/imports/jade/` folder. If you are creating an html file you wish to import, use the `source/elements/` folder is for, details on which are [below](#how-to-add-elements).

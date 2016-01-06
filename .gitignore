@@ -1,7 +1,7 @@
 # Project Folder ( new downloads should rebuild for less of a chance of curroption )
 app
 .packaged
-.assembly
+.assembled
 
 # Logs
 logs

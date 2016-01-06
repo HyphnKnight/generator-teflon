@@ -62,7 +62,7 @@ function assemble ( source , assembled , compress , fail ) {
 
 				} else if ( fileEnding === '.html' ) {
 
-					return fs.copyAsync( source , destination );
+					return parse.html( source , destination , compress , fail );
 
 				}
 

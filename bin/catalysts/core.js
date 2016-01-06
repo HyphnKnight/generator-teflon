@@ -31,28 +31,10 @@ function package ( sourcePath , packagedPath , compress , fail ) {
 
 					} else if ( fileEnding === '.html' ) {
 
-						return fs.copyAsync( pagePath , pagePath.replace( sourcePath , packagedPath ) );
+						return parse.html( pagePath , pagePath.replace( sourcePath , packagedPath ) , compress , fail );
 
 					}
 				} )
-				.value() );
-		} )
-
-		.then( () => { return glob(`${sourcePath}/scripts/**`) } )
-
-		.then( scriptsPaths => {
-			return rsvp.all( _.chain( scriptsPaths )
-				.filter( scriptPath => { return !fs.isDirectorySync( scriptPath ); } )
-				.map( scriptPath => { return parse.script( scriptPath , `${packagedPath}/scripts/${path.basename(scriptPath)}` ); } )
-				.value() );
-		} )
-
-		.then( () => { return glob(`${sourcePath}/styles/**`) } )
-
-		.then( stylesPaths => {
-			return rsvp.all( _.chain( stylesPaths )
-				.filter( stylePath => { return !fs.isDirectorySync( stylePath ); } )
-				.map( stylePath => { return parse.style( stylePath , `${packagedPath}/styles/${path.basename(stylePath)}` ); } )
 				.value() );
 		} )
 
@@ -69,10 +51,23 @@ function compile ( packagedPath , destinationPath , compress , fail ) {
 
 	return glob( `${packagedPath}/elements/**` , `${packagedPath}/elements/core/**` )
 		.then( excludedPaths => {
-			externalFiles = _.filter( excludedPaths , modulePath => { return !fs.isDirectorySync( modulePath ); } );
-			return vulcanize( `${packagedPath}/index.html` , externalFiles );
+			const externalFiles = _.filter( excludedPaths , modulePath => { return !fs.isDirectorySync( modulePath ); } );
+
+			return glob( `${packagedPath}/*` )
+				.then( pagePaths => {
+
+					pagePaths = _.filter( pagePaths , pagePath => { return !fs.isDirectorySync( pagePath ); } )
+
+					return rsvp.all( _.map( pagePaths , pagePath => { return vulcanize( pagePath , externalFiles ) } ) )
+						.then( vulcanizedBuffers => {
+							return rsvp.all( _.map( vulcanizedBuffers , ( buffer , index ) => {
+								return fs.outputFileAsync( pagePaths[index].replace( packagedPath , destinationPath ) , buffer );
+							} ) );
+						} )
+
+				} );
+
 		} )
-		.then( buffer => { return fs.outputFileAsync( `${destinationPath}/index.html` , buffer ); } )
 		.catch( error => {
 			log.error ( `core.compile has failed` , error );
 			fail && process.exit(1);

@@ -3,6 +3,7 @@ const
 	fs			= require( 'fs-extra-promise' ),
 	path		= require( 'path' ),
 	uglifyjs	= require( 'uglify-js' ),
+	htmlmini	= require( 'html-minifier' ).minify,
 	jadeRender	= require( 'jade' ).render,
 
 	monomers	= `${process.cwd()}/bin/monomers`,
@@ -28,7 +29,7 @@ function script ( sourcePath , destinationPath , compress , fail ) {
 
 			if ( compress ) {
 
-				return fs.outputFileAsync( destinationPath , uglifyjs.minify( babel( buffer , sourcePath ) , {fromString: true} ).code )
+				return fs.outputFileAsync( destinationPath , uglifyjs.minify( babel( buffer , sourcePath ) , { fromString : true , DEBUG : false } ).code )
 
 			} else {
 
@@ -96,4 +97,32 @@ function jade ( sourcePath , destinationPath , compress , fail ) {
 
 }
 
-module.exports = { script , style , jade };
+function html ( sourcePath , destinationPath , compress , fail ) {
+
+	log.runningTask( 'compile.jade' , 'node' , sourcePath);
+
+	return fs.readFileAsync( sourcePath , 'utf8' )
+		.then ( buffer => {
+			if ( compress ) {
+				return fs.outputFileAsync( destinationPath , htmlmini( buffer , {
+					collapseBooleanAttributes	: true,
+					removeAttributeQuotes		: true,
+					removeRedundantAttributes	: true,
+					collapseWhitespace			: true,
+					conservativeCollapse		: true,
+					caseSensitive				: true,
+					minifyJS					: { fromString : true , DEBUG : false },
+					minifyCSS					: true
+				}) );
+			} else {
+				return fs.outputFileAsync( destinationPath , buffer );
+			}
+		} )
+		.catch( error => {
+			log.error ( `compile.jade has failed to parse ${sourcePath}` , error );
+			fail && process.exit(1);
+		} );
+
+}
+
+module.exports = { script , style , jade , html };

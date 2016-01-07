@@ -1,7 +1,7 @@
 #Teflon
 Teflon is a build system that seeks to solve the limited nature of polymer construction, streamline the development process and optimize the final product.
 
-[Setup](#setup) | [How to create a page](#how-to-create-a-page) | [How to create an element](#how-to-create-an-element) | [The build process](#the-build-process)
+[Setup](#setup) | [How to create a page](#how-to-create-a-page) | [How to create an element](#how-to-create-an-element)
 
 ## Setup
 1. Download this repo above into the directory you would like your project to be located.
@@ -30,16 +30,24 @@ To use Teflon, run the command `node bin/build.js` that runs the build.js file w
 ## How to create a page
 Create a file on the top level of the `source/` folder with either a `.html` or a `.jade` ending. Once a file is created with either `.html` or `.jade` endings at the top level of the `source/` folder, it is processed as a page and the following . Its important to note that *any* jade or html file will be parsed as a page. If you want to have a jade file to import mixins, configurations or whatever into your pages, place it in the `source/imports/jade/` folder. If you are creating an html file you wish to import into a page, you should read the section below.
 
+[File Setup Reference](#page)
+
 ### How to add elements
 **Collections** are the folders right below the `source/elements/` folder. In order to add new elements to a project, first you need to add am appropraite collection folder or choose an existing one. The initial collection folders are `source/elements/subtle/` and `source/elements/core/`. The subtle collection is a normal folder and behaves like any folder you might create, however the core collection has a special property. Any element in the core collection will be inlined into the page instead of being linked to. The goal here is to reduce the time to first render and first interactive state.
 
 **Elements** are generated from jade files, html files or folders located inside of each collection folder. To use a prebuilt element simply create a collection folder and drop the html file in it. For more complicated element creation see [below](#how-to-create-an-element).
 
+[File Setup Reference](#elements)
+
 #### How to add styles & scripts
 When building a polymer project, global scripts and css files are still useful. I personally use `underscore.js` and `normalize.css` as starting points for my projects. In order to use your own external libraries all you need to do is add them to the `source/elements/core/core-scripts` folder and the `source/elements/core/core-styles` folder. You will need to add links in the `source/elements/core/core-styles/index.jade` for your styles and `source/elements/core/core-scripts/index.jade` for your scripts. This ensures the javascript files will be linted and transpiled from ES6 and css files will be compiled from sass or scss if applicable then auto-prefixed and organized. These files don't actually make it to the final product, they only exist in the final project as inlined scripts and styles.
 
+[File Setup Reference](#scripts-and-styles)
+
 ## How to create an element
 The goal of teflon is to provide a large degree of flexibility when building out elements. For a file to be understood as element to be processed it needs to be either a template file ( `.jade` or `.html` ) located directly inside of a collection folder. Files like this must be self contained, which means no imported files besides other elements. The other type of element is defined by creating a folder underneath a collection. Inside this folder must be either an `index.jade` or `index.html` file to represent the main template file to deliver. Any file you place inside the folder will be processed: script files; style files; and even other template files. I find this usefull for building out elements that only exist as children of specific other elements. For example, in `source/elements/subtle/subtle-dropdown` the `subtle-dropdown-option.jade` is an element only used inside of `elements/subtle/subtle-dropdown.html`. In that same example you can see how the `option-style.css` and the `option-script.js` files are processed and parsed and inlined in the same way as the `script.js` and `style.scss` files.
+
+[File Setup Reference](#elements)
 
 ## With thanks to the communites and individuals who build and support the following...
 * autoprefixer
@@ -64,7 +72,7 @@ The goal of teflon is to provide a large degree of flexibility when building out
 
 ### File System
 
-#### Pages
+#### Page
 ```
 source/
 	elements/
@@ -79,7 +87,7 @@ source/
 	about.jade	<-- Page
 	index.jade	<-- Page
 ```
-#### Scripts && Styles
+#### Scripts and Styles
 ```
 source/
 	elements/

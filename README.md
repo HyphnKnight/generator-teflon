@@ -39,10 +39,25 @@ Create a file on the top level of the `source/` folder with either a `.html` or 
 When building a polymer project, global scripts and css files are still useful. I personally use `underscore.js` and `normalize.css` as starting points for my projects. In order to use your own external libraries all you need to do is add them to the `source/elements/core/core-scripts` folder and the `source/elements/core/core-styles` folder. You will need to add links in the `source/elements/core/core-styles/index.jade` for your styles and `source/elements/core/core-scripts/index.jade` for your scripts. This ensures the javascript files will be linted and transpiled from ES6 and css files will be compiled from sass or scss if applicable then auto-prefixed and organized. These files don't actually make it to the final product, they only exist in the final project as inlined scripts and styles.
 
 ## How to create an element
-The goal of teflon is to provide a large degree of flexibility when building out elements. Elements come in 2 different setups, the single file elements which is located directly inside of the
+The goal of teflon is to provide a large degree of flexibility when building out elements. For a file to be understood as element to be processed it needs to be either a template file ( `.jade` or `.html` ) located directly inside of a collection folder. Files like this must be self contained, which means no imported files besides other elements. The other type of element is defined by creating a folder underneath a collection. Inside this folder must be either an `index.jade` or `index.html` file to represent the main template file to deliver. Any file you place inside the folder will be processed: script files; style files; and even other template files. I find this usefull for building out elements that only exist as children of specific other elements. For example, in `source/elements/subtle/subtle-dropdown` the `subtle-dropdown-option.jade` is an element only used inside of `elements/subtle/subtle-dropdown.html`. In that same example you can see how the `option-style.css` and the `option-script.js` files are processed and parsed and inlined in the same way as the `script.js` and `style.scss` files.
 
-## The build process
-1. Move the file from the `source` folder to the `.packaged` folder converting it to an html file if it was jade.
-1. Read all of the files from `source/styles` converting them if written in sass or scss into css and processing them before adding them to `.packaged/styles`.
-1. Read all of the files from `source/scripts` testing them with jslint, then transpiling them using babel before writing the resulting files to `.packaged/scripts`.
-1. Read all of the top level html files in `.packaged` and vulcanize them only allowing in : the scripts in `.packaged/scripts`;  the styles `.packaged/scripts` and the elements in `.packaged/elements/core`.
+## Reference
+
+## With thanks to the communites and individuals who build and support the following...
+* autoprefixer
+* babel
+* csscomb
+* cssnano
+* express
+* fs-extra-promise
+* glob
+* html-minifier
+* jade
+* jshint
+* node-sass
+* node-watch
+* postcss
+* rsvp
+* uglify-js
+* underscore
+* vulcanize

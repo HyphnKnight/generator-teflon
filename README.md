@@ -41,8 +41,6 @@ When building a polymer project, global scripts and css files are still useful. 
 ## How to create an element
 The goal of teflon is to provide a large degree of flexibility when building out elements. For a file to be understood as element to be processed it needs to be either a template file ( `.jade` or `.html` ) located directly inside of a collection folder. Files like this must be self contained, which means no imported files besides other elements. The other type of element is defined by creating a folder underneath a collection. Inside this folder must be either an `index.jade` or `index.html` file to represent the main template file to deliver. Any file you place inside the folder will be processed: script files; style files; and even other template files. I find this usefull for building out elements that only exist as children of specific other elements. For example, in `source/elements/subtle/subtle-dropdown` the `subtle-dropdown-option.jade` is an element only used inside of `elements/subtle/subtle-dropdown.html`. In that same example you can see how the `option-style.css` and the `option-script.js` files are processed and parsed and inlined in the same way as the `script.js` and `style.scss` files.
 
-## Reference
-
 ## With thanks to the communites and individuals who build and support the following...
 * autoprefixer
 * babel
@@ -61,3 +59,117 @@ The goal of teflon is to provide a large degree of flexibility when building out
 * uglify-js
 * underscore
 * vulcanize
+
+## Reference
+
+### File System
+
+#### Pages
+```
+source/
+	elements/
+	imports/
+		jade/
+			_config.jade	<-- file to be imported across the project into jade files
+			_mixin.jade		<-- file to be imported across the project into jade files
+		sass/
+			_config.scss	<-- file to be imported across the project into sass/scss files
+			_mixin.scss		<-- file to be imported across the project into sass/scss files
+	media/
+	about.jade	<-- Page
+	index.jade	<-- Page
+```
+#### Scripts && Styles
+```
+source/
+	elements/
+		core/
+			core-polymer/
+			core-scripts/
+				index.jade
+				underscore.js		<-- Script file
+				webcomponents.js	<-- Script file
+			core-styles/
+				index.jade
+				normalize.css		<-- Style file
+			core-structure.html
+		subtle/
+	imports/
+		jade/
+			_config.jade	<-- file to be imported across the project into jade files
+			_mixin.jade		<-- file to be imported across the project into jade files
+		sass/
+			_config.scss	<-- file to be imported across the project into sass/scss files
+			_mixin.scss		<-- file to be imported across the project into sass/scss files
+	media/
+	about.jade
+	index.jade
+```
+#### Collections
+```
+source/
+	elements/
+		core/	<-- Collection ( core modules will be inlined )
+		subtle/	<-- Collection ( will not be inlined )
+	imports/
+	media/
+	about.jade
+	index.jade
+```
+#### Elements
+```
+source/
+	elements/
+		core/
+			core-polymer/
+				index.jade			<-- An example of a non-polymer element
+				polymer-micro.js
+				polymer-mini.js
+				polymer.js
+			core-scripts/
+				index.jade			<-- An example of a non-polymer element
+				underscore.js
+				webcomponents.js
+			core-styles/
+				index.jade
+				normalize.css
+			core-structure.html		<-- An example of a self contained element
+		subtle/
+			subtle-button/
+				index.jade			<-- The main template of a folder based element
+				script.js			<-- Script file to be imported
+				style.scss			<-- Style file to be imported
+			subtle-calendar/
+				index.jade
+				script.js
+				style.scss
+			subtle-dropdown/
+				index.jade
+				script.js
+				style.scss
+				subtle-dropdown-option.jade	<-- A secondary element defined for use with subtle-dropdown
+				option-script.js			<-- script file for the secondary element
+				option-style.scss			<-- style file for the secondary element
+			subtle-input/
+				index.jade
+				script.js
+				style.scss
+			subtle-tabs/
+				index.jade
+				script.js
+				style.scss
+			subtle-textarea/
+				index.jade
+				script.js
+				style.scss
+	imports/
+		jade/
+			_config.jade	<-- file to be imported across the project into jade files
+			_mixin.jade		<-- file to be imported across the project into jade files
+		sass/
+			_config.scss	<-- file to be imported across the project into sass/scss files
+			_mixin.scss		<-- file to be imported across the project into sass/scss files
+	media/
+	about.jade
+	index.jade
+```

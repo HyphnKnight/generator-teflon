@@ -56,8 +56,21 @@ function application ( sourcePath , assembledPath , packagedPath , destinationPa
 			rsvp.Promise.resolve();
 		} )
 
-		.then( () => { return media.copy(	sourcePath,
-											destinationPath ); } )
+		.then( () => {
+
+			if ( compress ) {
+				return media.imagemin(	`${sourcePath}/media/images`,
+										`${destinationPath}/media/images` );
+			} else {
+				return media.copy(	sourcePath,
+									destinationPath );
+			}
+		} )
+
+		.then( () => {
+			return media.copy(	`${sourcePath}/media/fonts`,
+								`${destinationPath}/media/fonts` );
+		} )
 
 		.then( () => { log.success( `construct.application : ${( Date.now() - startTime )}ms` ); } )
 

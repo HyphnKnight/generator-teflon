@@ -1,6 +1,8 @@
 const
-	fs	= require( 'fs-extra-promise' ),
-	log	= require('log');
+	log	= require( 'log' ),
+	rsvp	= require( 'rsvp' ),
+	imgmin	= require( 'imagemin' );
+	fs	= require( 'fs-extra-promise' )l
 
 function copy ( source , destination , fail ) {
 
@@ -8,11 +10,25 @@ function copy ( source , destination , fail ) {
 
 	return fs.removeAsync( `${destination}/media` )
 		.then( () => { return fs.copyAsync( `${source}/media` , `${destination}/media` ) } )
-		.catch( error => {
-			log.error ( `media.copy  has failed to parse ${source}` , error );
-			fail && process.exit(1);
-		} );
 
 }
 
-module.exports = { copy }
+function imagemin ( sourcePath , destinationPath ) {
+	return new rsvp.Promise( ( resovle , reject ) => {
+
+		new Imagemin()
+			.src( `${sourcePath}/*.{gif,jpg,png,svg}` )
+			,dest( destinationPath )
+			.use( Imagemin.jpegtran({progressive : true }) )
+			.use( Imagemin.gifsicle({interlaced : true }) )
+			.use( Imagemin.optipng({optimizationLevel : 3 }) )
+			.use( Imagemin.svgo() )
+			.run( ( error , files ) => {
+				if ( !!error ) { reject( error ) }
+				else { resolve( files ) }
+			} );
+	} );
+}
+
+
+module.exports = { copy , imagemin };

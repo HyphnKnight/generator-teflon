@@ -58,7 +58,7 @@ function application ( sourcePath , assembledPath , packagedPath , destinationPa
 
 		.then( () => {
 
-			if ( compress ) {
+			if ( options.compress ) {
 				return media.imagemin(	`${sourcePath}/media/images`,
 										`${destinationPath}/media/images` );
 			} else {

@@ -1,4 +1,4 @@
-#Teflon
+![Teflon](./source/media/images/teflonLogo.png)
 Teflon is a build system designed to make polymer based application development easy through flexible design paired with thorough file processing.
 
 [Setup](#setup) | [How to create a page](#how-to-create-a-page) | [How to create an element](#how-to-create-an-element)

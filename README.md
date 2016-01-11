@@ -1,23 +1,23 @@
 ![Teflon](./source/media/images/teflonLogo.png)
 
-Teflon is a build system designed to make polymer based application development easy through flexible design paired with thorough file processing.
+Teflon is a build system designed to make polymer based application development easy.
 
 [Setup](#setup) | [How to create a page](#how-to-create-a-page) | [How to create an element](#how-to-create-an-element)
 
 ## Setup
-1. Download this repository into the directory you would like your project to be located.
-1. Install [node](https://nodejs.org/en/) if you don't already have it.
+1. Download this repository into your project folder.
+1. Install [node](https://nodejs.org/en/).
 1. Run `npm install` to install all of the dependencies in the [package.json](https://github.com/HyphnKnight/Teflon/blob/master/package.json) file.
-1. Remove all the extra files included in the project that you may not want.
+1. Remove any files not related to the build that you do not want. Below is a list of extraneous files:
   * All of the subtle elements in `source/elements/subtle/`.
   * In `source/elements/core/core-scripts/` the `underscore.js` file is extra but the `webcomponents.js` file is necessary.
   * In `source/elements/core/core-styles/` you can find the `normalize.css` file, I would suggest keeping it in but its not needed for the build.
-1. You should also edit the content of the following files.
-  * The existing pages are the `source/index.jade` & `source/about.jade` file, you can delete them and write new pages, however if you do keep them I would suggest changing the title and description as well taking a look at the other meta tags and change them incase they reference Teflon.
-  * You should alter most of the properties in the `package.json` file with the exception of main, scripts, and dependencies.
+1. You should also edit the content of the following files:
+  * The sample pages `source/index.jade` & `source/about.jade`.
+  * The properties of `package.json` with the exception of main, scripts & dependencies.
 
 ### The command
-To use Teflon, run the command `node bin/build.js` that runs the build.js file with no arguments which will produce an optimized uncompressed production ready build in the `app` folder. The following are Teflon's arguments which can be used to unlock additional functionality. They don't step on each others toes so can be used concurrently.
+To use Teflon, type the command `node bin/build.js`, which runs the build.js file with no arguments. This will produce an optimized uncompressed build in the `app` folder. The following are Teflon's arguments which can be used to unlock additional functionality, they also can be used concurrently:
 
 | argument | Effect |
 | ------- | ------ |
@@ -28,7 +28,7 @@ To use Teflon, run the command `node bin/build.js` that runs the build.js file w
 |  `--w` or `--watch` | Detect file changes and rebuild appropriately |
 |  `--d` or `--debug` | Prevents the intermediate build folders from being erased |
 
-I also added some shortcuts into the package file to ease developement. `npm run dev` is an alias for `node bin/build.js --d --w --s` my most used developement command. `npm run build` is an alias for `node bin/build.js --c` which I suggest to use for production builds.
+The shortcuts in the `package.json` file can ease developement: `npm run dev` is an alias for `node bin/build.js --d --w --s` which sets up a developement enviroment; `npm run build` is an alias for `node bin/build.js --c`, which generates a production build.
 
 ## How to create a page
 To make a new page create a file on the top level of the `source/` folder with either a `.html` or a `.jade` ending. Once that file is made Teflon will proccess it. Its important to note that *any* jade or html file will be parsed as a page. If you want to have a secondary jade file to import into your main page place it in the `source/imports/jade/` folder. If you are creating an html file you wish to import into a page, you should read the section below.
@@ -36,23 +36,23 @@ To make a new page create a file on the top level of the `source/` folder with e
 [File Reference](#page)
 
 ### How to add elements
-**Collections** are the folders right below the `source/elements/` folder. In order to add new elements to a project, first you need to add an appropriate collection folder or choose an existing one. The initial collection folders are `source/elements/subtle/` and `source/elements/core/`. The subtle collection is a normal collection and behaves like any collection you might create, however the core collection has a special property. Any element in the core collection will be inlined into the page instead of being linked to. The goal here is to reduce the time to first render and first interactive state.
+**Collections** are the folders right below the `source/elements/` folder. In order to add new elements to a project, first you need to add an appropriate collection folder or choose an existing one. The initial collection folders are `source/elements/subtle/` and `source/elements/core/`. The core collection has a special property, any of its element will be inlined into the page instead of being linked to. Inlined elements can be used to reduce the time to first render and interactive state.
 
-**Elements** are generated from jade files, html files or folders located inside of each collection folder. To use a prebuilt element simply create a collection folder and drop the html file in it. For more complicated element creation see [below](#how-to-create-an-element).
+**Elements** are created from jade files, html files or directories. To use a prebuilt element create a collection folder and drop the html file into it. For more complicated element creation see [below](#how-to-create-an-element).
 
 [File Reference](#elements)
 
 ### How to add styles & scripts
-When building a polymer project, global scripts and css files are still useful. I personally use `underscore.js` and `normalize.css` as starting points for my projects. In order to use your own external libraries all you need to do is add them to the `source/elements/core/core-scripts` folder and the `source/elements/core/core-styles` folder. You will need to add links in the `source/elements/core/core-styles/index.jade` for your styles and `source/elements/core/core-scripts/index.jade` for your scripts. This ensures the javascript files will be linted and transpiled from ES6 and css files will be compiled from sass or scss if applicable then auto-prefixed and organized. These files don't actually make it to the final product, they only exist in the final project as inlined scripts and styles.
+In order to use your own external style and script files, add them to the `source/elements/core/core-scripts` folder and the `source/elements/core/core-styles` folder. You will need to add links in the `source/elements/core/core-styles/index.jade` for your styles and `source/elements/core/core-scripts/index.jade` for your scripts. This ensures the javascript files will be linted and transpiled from ES6. It also ensures css files will be compiled from sass or scss if applicable then auto-prefixed and organized. Please note these files only exist in the final project as inlined scripts and styles.
 
 [File Reference](#scripts-and-styles)
 
 ## How to create an element
-The goal of Teflon is to provide a large degree of flexibility when building out elements. For a file to be understood as element to be processed it needs to be either a template file ( `.jade` or `.html` ) located directly inside of a collection folder. Files like this must be self contained, which means no imported files besides other elements. The other type of element is defined by creating a folder underneath a collection. Inside this folder must be either an `index.jade` or `index.html` file to represent the main template file to deliver. Any file you place inside the folder will be processed: script files; style files; and even other template files. I find this useful for building out elements that only exist as children of specific other elements. For example, in `source/elements/subtle/subtle-dropdown` the `subtle-dropdown-option.jade` is an element only used inside of `elements/subtle/subtle-dropdown.html`. In that same example you can see how the `option-style.css` and the `option-script.js` files are processed and parsed and inlined in the same way as the `script.js` and `style.scss` files.
+The goal of Teflon is to provide a large degree of flexibility when building out elements. For a file to be registered as an element it needs to be a template file ( `.jade` or `.html` ) located directly inside of a collection folder. Files like this must be self contained so no imported files besides other elements are to be used. If you would like to import style or script files instead create a directory. Inside this directory there must be either an `index.jade` or `index.html` file to represent the main template file. Any script, style or template file you place inside the folder will be processed. This is useful for building out elements that only exist as children of specific other elements. For example, in `source/elements/subtle/subtle-dropdown` the `subtle-dropdown-option.jade` is an element only used inside of `elements/subtle/subtle-dropdown.html`. In that same example you can see how the `option-style.css` and the `option-script.js` files are processed and parsed and inlined in the same way as the `script.js` and `style.scss` files.
 
 [File Reference](#elements)
 
-## With thanks to the communities and individuals who build and support the following...
+## With thanks to the communities and individuals who build and support the following:
 * autoprefixer
 * babel
 * csscomb
@@ -81,11 +81,11 @@ source/
 	elements/
 	imports/
 		jade/
-			_config.jade	<-- file to be imported across the project into jade files
-			_mixin.jade		<-- file to be imported across the project into jade files
+			_config.jade	<-- file to be imported into jade files
+			_mixin.jade		<-- file to be imported into jade files
 		sass/
-			_config.scss	<-- file to be imported across the project into sass/scss files
-			_mixin.scss		<-- file to be imported across the project into sass/scss files
+			_config.scss	<-- file to be imported into sass/scss files
+			_mixin.scss		<-- file to be imported into sass/scss files
 	media/
 	about.jade	<-- Page
 	index.jade	<-- Page
@@ -107,11 +107,11 @@ source/
 		subtle/
 	imports/
 		jade/
-			_config.jade	<-- file to be imported across the project into jade files
-			_mixin.jade		<-- file to be imported across the project into jade files
+			_config.jade	<-- file to be imported into jade files
+			_mixin.jade		<-- file to be imported into jade files
 		sass/
-			_config.scss	<-- file to be imported across the project into sass/scss files
-			_mixin.scss		<-- file to be imported across the project into sass/scss files
+			_config.scss	<-- file to be imported into sass/scss files
+			_mixin.scss		<-- file to be imported into sass/scss files
 	media/
 	about.jade
 	index.jade
@@ -175,11 +175,11 @@ source/
 				style.scss
 	imports/
 		jade/
-			_config.jade	<-- file to be imported across the project into jade files
-			_mixin.jade		<-- file to be imported across the project into jade files
+			_config.jade	<-- file to be imported into jade files
+			_mixin.jade		<-- file to be imported into jade files
 		sass/
-			_config.scss	<-- file to be imported across the project into sass/scss files
-			_mixin.scss		<-- file to be imported across the project into sass/scss files
+			_config.scss	<-- file to be imported into sass/scss files
+			_mixin.scss		<-- file to be imported into sass/scss files
 	media/
 	about.jade
 	index.jade

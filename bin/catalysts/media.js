@@ -1,19 +1,13 @@
 const
-	log	= require( 'log' ),
+	log		= require( 'log' ),
+	_		= require( 'underscore' ),
 	rsvp	= require( 'rsvp' ),
 	imgmin	= require( 'imagemin' ),
-	fs	= require( 'fs-extra-promise' );
-
-function copy ( source , destination , fail ) {
-
-	log.runningTask( 'media.copy ' , 'node' , source);
-
-	return fs.removeAsync( `${destination}` )
-		.then( () => { return fs.copyAsync( `${source}` , `${destination}` ) } )
-
-}
+	fs		= require( 'fs-extra-promise' ),
+	glob	= require( './../monomers/glob.js' );
 
 function imagemin ( sourcePath , destinationPath ) {
+
 	return new rsvp.Promise( ( resolve , reject ) => {
 
 		new imgmin()
@@ -30,5 +24,36 @@ function imagemin ( sourcePath , destinationPath ) {
 	} );
 }
 
+function minify ( sourcePath , destinationPath ) {
 
-module.exports = { copy , imagemin };
+	log.runningTask( 'media.minify ' , 'node' , sourcePath );
+
+	return fs.removeAsync( destinationPath )
+		.then( () => { return glob( `${sourcePath}/*` ) } )
+		.then( paths => {
+			return rsvp.all( _.map( paths , path => {
+				if ( path === `${sourcePath}/images` ) {
+					return imagemin( path , path.replace( sourcePath , destinationPath ) );
+				} else {
+					return fs.copyAsync( path , path.replace( sourcePath , destinationPath ) );
+				}
+			} ) );
+		} )
+
+}
+
+function transfer ( sourcePath , destinationPath ) {
+
+	log.runningTask( 'media.transfer ' , 'node' , sourcePath );
+
+	return fs.removeAsync( destinationPath )
+		.then( () => { return glob( `${sourcePath}/*` ) } )
+		.then( paths => {
+			return rsvp.all( _.map( paths , path => {
+				return fs.copyAsync( path , path.replace( sourcePath , destinationPath ) );
+			} ) );
+		} )
+
+}
+
+module.exports = { transfer , minify };

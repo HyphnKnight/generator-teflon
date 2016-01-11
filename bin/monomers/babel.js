@@ -6,7 +6,7 @@ module.exports = function babel ( buffer, path ) {
 
 	log.processing( path , 'babel.transform' );
 
-	try { return transform( buffer , { presets : ['es2015'] } ).code; }
+	try { return transform( buffer , { presets : ['es2015'] , compact : false } ).code; }
 	catch ( error ) {
 
 		log.error( `babel.transform has failed to parse the buffer for ${path}` , __filename , error );

@@ -34,6 +34,10 @@ Polymer({
 		this._invertColor();
 	},
 
+	_inputChange : function( e ) {
+		this.value = e.target.value;
+	},
+
 	_error : function ( ) {
 		this.toggleClass( 'error' , this.error );
 	},

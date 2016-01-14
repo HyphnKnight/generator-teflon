@@ -5,8 +5,8 @@
   "main": "bin/build.js",
   "scripts": {
     "start": "node bin/build.js",
-    "dev": "node bin/build.js --s --d --w",
-    "build": "node bin/build.js --c",
+    "dev": "node bin/test.js && node bin/build.js --s --d --w",
+    "build": "node bin/test.js && node bin/build.js --c",
     "test": "node bin/test.js"
   },
   "repository": {

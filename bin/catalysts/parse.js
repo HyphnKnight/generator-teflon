@@ -27,7 +27,7 @@ function script ( sourcePath , destinationPath , compress , fail ) {
 		} )
 		.then ( buffer => {
 
-			jshint.lint( buffer , sourcePath );
+			jshint.lint( buffer , sourcePath , {} );
 
 			if ( compress ) {
 

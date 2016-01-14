@@ -1,3 +1,5 @@
+'use strict';
+
 const
 	log		= require ( 'log' ),
 	express	= require ( 'express' );
@@ -18,6 +20,6 @@ function create ( servePath , port , address ) {
 
 		} );
 
-};
+}
 
 module.exports = { create };

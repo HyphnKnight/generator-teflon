@@ -26,13 +26,13 @@ const
 	debug		= _.contains( args , '--d' ) || _.contains( args , '--debug' ),
 
 	port = ( ( ) => {
-		const port = ( _.find( args , ( arg ) => { return arg.search('--p=') !== -1 } ));
+		const port = ( _.find( args , ( arg ) => { return arg.search('--p=') !== -1; } ));
 		if ( _.isUndefined( port ) ) return process.env.PORT ? process.env.PORT : 8000;
 		else return Number( port.substr( 4 ) );
 	} )(),
 
 	address = ( ( ) => {
-		const address = ( _.find( args , ( arg ) => { return arg.search('--a=') !== -1 } ));
+		const address = ( _.find( args , ( arg ) => { return arg.search('--a=') !== -1; } ));
 		if ( _.isUndefined( address ) ) return '0.0.0.0';
 		else return address.substr( 3 );
 	} )(),
@@ -41,8 +41,8 @@ const
 
 log.starting( 'Teflon Application Compiler' );
 
-construct.application.apply( this , constructionArguments );
+construct.application.apply( null , constructionArguments );
 
-if ( watch ) { watcher.apply( this , constructionArguments ); }
+if ( watch ) { watcher.apply( null , constructionArguments ); }
 
 if ( serve ) { server.create( destination , port , address ); }

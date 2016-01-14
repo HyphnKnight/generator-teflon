@@ -8,7 +8,7 @@ const
 
 	csscomb = ( function ( Comb ) {
 
-		var comb = new Comb();
+		const comb = new Comb();
 
 		comb.configure( {
 			"remove-empty-rulesets": true,
@@ -48,7 +48,7 @@ module.exports = function postcss ( path , buffer , compress ) {
 	log.processing( path , `${!!compress ? 'cssnano' : 'csscomb'} autoprefixer` );
 
 	return ( !!compress ? parseMin : parse ).process( buffer )
-		.then ( result => { return result.css } )
+		.then ( result => { return result.css; } )
 		.catch ( error => {
 			log.error( 'Failed to process css' , path , error );
 			process.exit(1);

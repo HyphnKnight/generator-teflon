@@ -10,7 +10,7 @@ function globPromise ( path , options ) {
 
 	return new rsvp.Promise( ( resolve , reject ) => {
 
-		log.runningTask( 'glob' , 'glob' , path , __filename);
+		log.runningTask( 'glob' , 'glob' , path );
 
 		glob( path , options , ( error , files ) => {
 
@@ -21,7 +21,7 @@ function globPromise ( path , options ) {
 
 	} );
 
-};
+}
 
 function globExclude ( includes , excludes , options ) {
 
@@ -35,11 +35,11 @@ function globExclude ( includes , excludes , options ) {
 				.value();
 		} )
 		.catch ( error => {
-			log.error( `Failed to glob files includes : ${includes}, excludes : ${excludes}` , __filename , error );
+			log.error( `Failed to glob files includes : ${includes}, excludes : ${excludes}` , error );
 			process.exit(1);
 		} );
 
-};
+}
 
 function globInclude ( includes , options ) {
 
@@ -47,11 +47,11 @@ function globInclude ( includes , options ) {
 	return globPromise( includes , options )
 		.then( files => { return _.filter( files , path => { return path.search( '.DS_Store' ) === -1; } ); } )
 		.catch ( error => {
-			log.error( `Failed to glob files includes : ${includes}, excludes : ${excludes}` , __filename , error );
+			log.error( `Failed to glob files includes : ${includes}` , error );
 			process.exit(1);
 		} );
 
-};
+}
 
 module.exports = function glob (  includes , excludes , options  ){
 
@@ -65,4 +65,4 @@ module.exports = function glob (  includes , excludes , options  ){
 
 	}
 
-}
+};

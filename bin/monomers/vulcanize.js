@@ -1,3 +1,5 @@
+'use strict';
+
 const
 	log = require('log'),
 	rsvp = require('rsvp'),

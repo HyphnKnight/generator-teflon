@@ -1,3 +1,5 @@
+'use strict';
+
 const
 	_			= require ( 'underscore' ),
 	log			= require ( 'log' ),

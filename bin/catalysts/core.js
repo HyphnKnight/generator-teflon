@@ -1,3 +1,5 @@
+'use strict';
+
 const
 	path	= require( 'path' ),
 	_		= require( 'underscore' ),
@@ -12,7 +14,7 @@ const
 	glob		= require( `${monomers}glob.js` ),
 	vulcanize	= require( `${monomers}vulcanize.js` );
 
-function package ( sourcePath , packagedPath , compress , fail ) {
+function pile ( sourcePath , packagedPath , compress , fail ) {
 
 	log.runningTask( 'core.package' , 'node' , sourcePath );
 
@@ -40,12 +42,12 @@ function package ( sourcePath , packagedPath , compress , fail ) {
 
 		.catch( error => {
 			log.error ( `core.package has failed` , error );
-			fail && process.exit(1);
-		} )
+			if ( fail ) { process.exit(1); }
+		} );
 
 }
 
-function compile ( packagedPath , destinationPath , compress , fail ) {
+function compile ( packagedPath , destinationPath , fail ) {
 
 	log.runningTask( 'core.compile' , 'node' , packagedPath );
 
@@ -56,24 +58,24 @@ function compile ( packagedPath , destinationPath , compress , fail ) {
 			return glob( `${packagedPath}/*` )
 				.then( pagePaths => {
 
-					pagePaths = _.filter( pagePaths , pagePath => { return !fs.isDirectorySync( pagePath ); } )
+					pagePaths = _.filter( pagePaths , pagePath => { return !fs.isDirectorySync( pagePath ); } );
 
-					return rsvp.all( _.map( pagePaths , pagePath => { return vulcanize( pagePath , externalFiles ) } ) )
+					return rsvp.all( _.map( pagePaths , pagePath => { return vulcanize( pagePath , externalFiles ); } ) )
 						.then( vulcanizedBuffers => {
 							return rsvp.all( _.map( vulcanizedBuffers , ( buffer , index ) => {
 								return fs.outputFileAsync( pagePaths[index].replace( packagedPath , destinationPath ) , buffer );
 							} ) );
-						} )
+						} );
 
 				} );
 
 		} )
 		.catch( error => {
 			log.error ( `core.compile has failed` , error );
-			fail && process.exit(1);
-		} )
+			if ( fail ) { process.exit(1); }
+		} );
 
 }
 
 
-module.exports = { package , compile };
+module.exports = { pile , compile };

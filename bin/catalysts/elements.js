@@ -1,3 +1,5 @@
+'use strict';
+
 const
 	path	= require( 'path' ),
 	_		= require( 'underscore' ),
@@ -29,12 +31,12 @@ function assemble ( source , assembled , compress , fail ) {
 									file.search('global') === -1 &&
 									file.search('media') === -1;
 							}  )
-							.map( file => { return elements.assemble( `${source}/${file}` , assembled , compress , fail) } )
+							.map( file => { return assemble( `${source}/${file}` , assembled , compress , fail); } )
 							.value() );
 					} )
 					.catch( error => {
 						log.error ( `elements.assemble has failed to parse dir ${source}` , error );
-						fail && process.exit(1);
+						if ( fail ) { process.exit(1); }
 					} );
 
 			} else {
@@ -71,12 +73,12 @@ function assemble ( source , assembled , compress , fail ) {
 		} )
 		.catch( error => {
 			log.error ( `elements.assemble has failed to parse file ${source}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} );
 
 }
 
-function package ( assembled , packaging , compress , fail ) {
+function pile ( assembled , packaged , fail ) {
 
 	log.runningTask( 'elements.package' , 'node' , assembled);
 
@@ -92,13 +94,13 @@ function package ( assembled , packaging , compress , fail ) {
 				return vulcanize( modulePath  )
 					.then( buffer => {
 						return fs.outputFileAsync( modulePath.search( 'index.html' ) !== -1 ?
-								(`${ path.dirname(modulePath) }.html`).replace( '.assembled' , '.packaged' ) :
-								modulePath.replace( '.assembled' , '.packaged' ),
+								(`${ path.dirname(modulePath) }.html`).replace( assembled , packaged ) :
+								modulePath.replace( assembled , packaged ),
 							buffer );
 					} )
 					.catch( error => {
 						log.error( `Failed to vulcanize ${modulePath}` , error );
-						fail && process.exit(1);
+						if ( fail ) { process.exit(1); }
 					} );
 
 			} ) );
@@ -106,7 +108,7 @@ function package ( assembled , packaging , compress , fail ) {
 		} )
 		.catch ( error => {
 			log.error ( `elements.package has failed to parse ${assembled}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} );
 
 }
@@ -116,17 +118,12 @@ function compile ( packaged , destination ) {
 	log.runningTask( 'elements.compile' , 'node' , packaged );
 
 	return glob( `${packaged}/elements/**` , `${packaged}/elements/core/**` )
-		.catch( error => {
-			log.error( 'elements.compile => glob has failed' , error );
-		} )
 		.then( excludedPaths => {
-			externalFiles = _.filter( excludedPaths , modulePath => { return !fs.isDirectorySync( modulePath ); } );
-			return rsvp.all( _.map( externalFiles , file => {
-				return fs.copyAsync( file , file.replace( packaged , destination ) )
-			} ) );
+			const externalFiles = _.filter( excludedPaths , modulePath => { return !fs.isDirectorySync( modulePath ); } );
+			return rsvp.all( _.map( externalFiles , file => { return fs.copyAsync( file , file.replace( packaged , destination ) ); } ) );
 		} )
 		.catch( error => { log.error( 'elements.compile has failed' , error ); } );
 
 }
 
-module.exports = { assemble , package , compile };
+module.exports = { assemble , pile , compile };

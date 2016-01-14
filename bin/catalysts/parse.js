@@ -1,3 +1,5 @@
+'use strict';
+
 const
 	log			= require( 'log' ),
 	fs			= require( 'fs-extra-promise' ),
@@ -21,7 +23,7 @@ function script ( sourcePath , destinationPath , compress , fail ) {
 	return fs.readFileAsync( sourcePath , 'utf8' )
 		.catch( error => {
 			log.error ( `compile.script has failed to read ${sourcePath}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} )
 		.then ( buffer => {
 
@@ -29,7 +31,7 @@ function script ( sourcePath , destinationPath , compress , fail ) {
 
 			if ( compress ) {
 
-				return fs.outputFileAsync( destinationPath , uglifyjs.minify( babel( buffer , sourcePath ) , { fromString : true , DEBUG : false } ).code )
+				return fs.outputFileAsync( destinationPath , uglifyjs.minify( babel( buffer , sourcePath ) , { fromString : true , DEBUG : false } ).code );
 
 			} else {
 
@@ -41,7 +43,7 @@ function script ( sourcePath , destinationPath , compress , fail ) {
 		} )
 		.catch( error => {
 			log.error ( `compile.script has failed to write ${destinationPath}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} );
 
 }
@@ -53,18 +55,18 @@ function style ( sourcePath , destinationPath , compress , fail ) {
 	return fs.readFileAsync( sourcePath , 'utf8' )
 		.catch( error => {
 			log.error ( `compile.style => readFileAsync has failed to parse ${sourcePath}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} )
 		.then( buffer => {
 			if ( path.extname( sourcePath ) === '.css' ) {
 				return buffer;
 			} else {
-				return sass( { data : buffer, outputStyle : 'nested' } , sourcePath )
+				return sass( { data : buffer, outputStyle : 'nested' } , sourcePath );
 			}
 		} )
 		.catch( error => {
 			log.error ( `compile.style => sass has failed to parse ${sourcePath}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} )
 		.then ( buffer => {
 			buffer = path.extname( sourcePath ) === '.css' ?
@@ -79,7 +81,7 @@ function style ( sourcePath , destinationPath , compress , fail ) {
 		} )
 		.catch( error => {
 			log.error ( `compile.style has failed to parse ${sourcePath}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} );
 
 }
@@ -92,7 +94,7 @@ function jade ( sourcePath , destinationPath , compress , fail ) {
 		.then ( buffer => { return fs.outputFileAsync( destinationPath , jadeRender( buffer , { pretty : !!compress ? false : '\t' , filename : sourcePath } ) );  } )
 		.catch( error => {
 			log.error ( `compile.jade has failed to parse ${sourcePath}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} );
 
 }
@@ -120,7 +122,7 @@ function html ( sourcePath , destinationPath , compress , fail ) {
 		} )
 		.catch( error => {
 			log.error ( `compile.jade has failed to parse ${sourcePath}` , error );
-			fail && process.exit(1);
+			if ( fail ) { process.exit(1); }
 		} );
 
 }

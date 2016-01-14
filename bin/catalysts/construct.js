@@ -1,9 +1,11 @@
+'use strict';
+
 const
 
 	/* Node Modules */
 	_		= require ( 'underscore' ),
 	log		= require ( 'log' ),
-	rsvp 	= require ( 'rsvp' )//,
+	rsvp 	= require ( 'rsvp' ),
 
 	/* Catalyst */
 	catalyst	= `${process.cwd()}/bin/catalysts`,
@@ -31,21 +33,20 @@ function application ( sourcePath , assembledPath , packagedPath , destinationPa
 		.then( () => { return elements.assemble (	options.elementsSource,
 													assembledPath,
 													options.compress,
-													options.fail ) } )
+													options.fail ); } )
 
-		.then( () => { return elements.package(	assembledPath,
+		.then( () => { return elements.pile(	assembledPath,
 												packagedPath,
 												options.compress,
 												options.fail ); } )
 
-		.then( () => { return core.package(	sourcePath,
+		.then( () => { return core.pile(	sourcePath,
 											packagedPath,
 											options.compress,
 											options.fail ); } )
 
 		.then( () => { return core.compile(	packagedPath,
 											destinationPath,
-											options.compress,
 											options.fail ); } )
 
 		.then( () => { return elements.compile(	packagedPath,
@@ -72,7 +73,7 @@ function application ( sourcePath , assembledPath , packagedPath , destinationPa
 
 		.catch( error => {
 			log.error ( `construct.application has failed` , error );
-			options.fail && process.exit(1);
+			if ( options.fail ) { process.exit(1); }
 		} );
 
 }
@@ -91,7 +92,7 @@ function element ( sourcePath , assembledPath , packagedPath , destinationPath ,
 								options.compress,
 								options.fail )
 
-		.then( () => { return elements.package(	assembledPath,
+		.then( () => { return elements.pile(	assembledPath,
 												packagedPath,
 												options.compress,
 												options.fail ); } )
@@ -101,15 +102,15 @@ function element ( sourcePath , assembledPath , packagedPath , destinationPath ,
 
 		.then( () => { return !options.debug ?
 			utility.removePaths( assembledPath , packagedPath ) :
-			'test';//rsvp.Promise.resolve();
+			true;
 		} )
 
 		.then( () => { log.success( `construct.element : ${( Date.now() - startTime )}ms` ); } )
 
 		.catch( error => {
 			log.error ( `construct.element has failed` , error );
-			options.fail && process.exit(1);
-		} )
+			if ( options.fail ) { process.exit(1); }
+		} );
 
 }
 

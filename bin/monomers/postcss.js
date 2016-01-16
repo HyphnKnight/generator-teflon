@@ -6,7 +6,7 @@ const
 	cssnano			= require( 'cssnano' ),
 	postcss			= require( 'postcss' ),
 
-	csscomb = ( function ( Comb ) {
+	/*csscomb = ( function ( Comb ) {
 
 		const comb = new Comb();
 
@@ -38,7 +38,7 @@ const
 
 		return comb;
 
-	} )( require( 'csscomb' ) ),
+	} )( require( 'csscomb' ) ),*/
 	parseMin = postcss([ autoprefixer , cssnano ]),
 	parse = postcss([ autoprefixer ]);
 

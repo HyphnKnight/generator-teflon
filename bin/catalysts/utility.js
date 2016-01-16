@@ -2,7 +2,6 @@
 
 const
 	rsvp	= require( 'rsvp' ),
-	log		= require( 'log' ),
 	fs		= require( 'fs-extra-promise' ),
 	_		= require( 'underscore' );
 

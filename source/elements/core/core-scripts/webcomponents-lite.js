@@ -1,3 +1,5 @@
+/* jshint ignore:start */
+
 /**
  * @license
  * Copyright (c) 2014 The Polymer Project Authors. All rights reserved.
@@ -2266,3 +2268,4 @@ if (typeof HTMLTemplateElement === "undefined") {
   var head = document.querySelector("head");
   head.insertBefore(style, head.firstChild);
 })(window.WebComponents);
+/* jshint ignore:end */

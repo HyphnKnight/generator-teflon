@@ -12,8 +12,7 @@ const
 	core		= require ( `${catalyst}/core.js` ),
 	elements	= require ( `${catalyst}/elements.js` ),
 	utility		= require ( `${catalyst}/utility.js` ),
-	media		= require ( `${catalyst}/media.js` ),
-	parse		= require ( `${catalyst}/parse.js` );
+	media		= require ( `${catalyst}/media.js` );
 
 function application ( sourcePath , assembledPath , packagedPath , destinationPath , options ) {
 

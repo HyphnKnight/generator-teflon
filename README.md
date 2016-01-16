@@ -10,7 +10,7 @@ Teflon is a build system designed to make polymer based application development 
 1. Run `npm install` to install all of the dependencies in the [package.json](https://github.com/HyphnKnight/Teflon/blob/master/package.json) file.
 1. Remove any files not related to the build that you do not want. Below is a list of extraneous files:
   * All of the subtle elements in `source/elements/subtle/`.
-  * In `source/elements/core/core-scripts/` the `underscore.js` file is extra but the `webcomponents.js` file is necessary.
+  * In `source/elements/core/core-scripts/` the `underscore.js` file is extra but the `webcomponents-lite.js` file is necessary.
   * In `source/elements/core/core-styles/` you can find the `normalize.css` file, I would suggest keeping it in but its not needed for the build.
 1. You should also edit the content of the following files:
   * The sample pages `source/index.jade` & `source/about.jade`.

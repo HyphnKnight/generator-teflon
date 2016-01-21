@@ -4,6 +4,7 @@ const
 
 	_	= require ( 'underscore' ),
 	log	= require ( 'log' ),
+	exec = require('child_process').exec,
 
 	/* Paths */
 	source		= process.cwd() + '/source',
@@ -24,6 +25,7 @@ const
 	serve		= _.contains( args , '--s' ) || _.contains( args , '--server' ),
 	watch		= _.contains( args , '--w' ) || _.contains( args , '--watch' ),
 	debug		= _.contains( args , '--d' ) || _.contains( args , '--debug' ),
+	test		= _.contains( args , '--t' ) || _.contains( args , '--test' ),
 
 	port = ( ( ) => {
 		const port = ( _.find( args , ( arg ) => { return arg.search('--p=') !== -1; } ));
@@ -37,12 +39,30 @@ const
 		else return address.substr( 3 );
 	} )(),
 
-	constructionArguments = [ source , assembled , packaged , destination , { compress , fail : !watch , debug } ];
+	constructionArguments = [ source , assembled , packaged , destination , { compress , fail : !watch , debug , test } ];
 
 log.starting( 'Teflon Application Compiler' );
 
-construct.application.apply( null , constructionArguments );
+if ( test ) {
 
-if ( watch ) { watcher.apply( null , constructionArguments ); }
+	exec( 'npm list -g | grep web-component-tester' , (error, stdout, stderr) => {
 
-if ( serve ) { server.create( destination , port , address ); }
+		constructionArguments[4].test = stdout.search('web-component-tester') !== -1;
+
+		construct.application.apply( null , constructionArguments );
+
+		if ( watch ) { watcher.apply( null , constructionArguments ); }
+
+		if ( serve ) { server.create( destination , port , address ); }
+
+	} );
+
+} else {
+
+	construct.application.apply( null , constructionArguments );
+
+	if ( watch ) { watcher.apply( null , constructionArguments ); }
+
+	if ( serve ) { server.create( destination , port , address ); }
+
+}

@@ -7,12 +7,16 @@ const
 	log		= require ( 'log' ),
 	rsvp 	= require ( 'rsvp' ),
 
-	/* Catalyst */
+	/* Teflon Modules */
 	catalyst	= `${process.cwd()}/bin/catalysts`,
+	monomer		= `${process.cwd()}/bin/monomers`,
+
 	core		= require ( `${catalyst}/core.js` ),
 	elements	= require ( `${catalyst}/elements.js` ),
 	utility		= require ( `${catalyst}/utility.js` ),
-	media		= require ( `${catalyst}/media.js` );
+	media		= require ( `${catalyst}/media.js` ),
+
+	wct	= require ( `${monomer}/web-component-tester.js` );
 
 function application ( sourcePath , assembledPath , packagedPath , destinationPath , options ) {
 
@@ -33,6 +37,8 @@ function application ( sourcePath , assembledPath , packagedPath , destinationPa
 													assembledPath,
 													options.compress,
 													options.fail ); } )
+
+		.then( () => { return options.test ? wct(assembledPath) : true; })
 
 		.then( () => { return elements.pile(	assembledPath,
 												packagedPath,

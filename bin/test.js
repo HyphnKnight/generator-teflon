@@ -29,5 +29,3 @@ rsvp.all([ glob(`${process.cwd()}/bin/*/**.js`) , glob(`${process.cwd()}/bin/*.j
 		log.error( 'Testing has failed', error );
 		process.exit(1);
 	} );
-
-/* Step 2 : Run all unit tests */

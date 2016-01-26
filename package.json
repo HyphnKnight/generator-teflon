@@ -1,5 +1,5 @@
 {
-  "name": "teflon",
+  "name": "generator-teflon",
   "version": "1.0.0",
   "description": "Polymer App Template",
   "main": "app/index.js",
@@ -17,5 +17,8 @@
   },
   "homepage": "https://github.com/HyphnKnight/Teflon#readme",
   "dependencies": {
+    "log": "github:hyphnknight/log",
+    "underscore": "^1.8.3",
+    "yeoman-generator": "^0.22.4"
   }
 }

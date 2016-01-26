@@ -4,6 +4,7 @@ const
 	log		= require('log'),
 	_		= require('underscore'),
 	rsvp	= require('rsvp'),
+	exec	= require('child_process').exec,
 	glob	= require( './../monomers/glob.js' );
 
 module.exports = function web_component_tester ( path ) {
@@ -29,6 +30,6 @@ module.exports = function web_component_tester ( path ) {
 				} ) );
 
 			} )
-			.catch( error => { log.warn( 'web component tester has encountered an error' , error ) } );
+			.catch( error => { log.warn( 'web component tester has encountered an error' , error ); process.exit(1); } );
 
 };

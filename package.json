@@ -7,6 +7,11 @@
     "type": "git",
     "url": "git+https://github.com/HyphnKnight/Teflon.git"
   },
+  "files": [
+    "app",
+    "add-page",
+    "add-el"
+  ],
   "keywords": [
     "Polymer"
   ],

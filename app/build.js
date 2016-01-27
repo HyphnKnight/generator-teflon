@@ -2,10 +2,9 @@
 
 global.root	= process.cwd();
 global.source = `${global.root}/source`;
-global.bin = `${global.root}/bin`;
 global.teflon = {
-	root : __dirname,
-	bin : `${__dirname}/bin`,
+	root : `${__dirname}/..`,
+	bin : `${__dirname}/../bin`,
 	imports : `${__dirname}/imports`
 };
 

@@ -1,4 +1,4 @@
-![Teflon](./source/media/images/teflonLogo.png)
+![Teflon](https://github.com/HyphnKnight/generator-teflon/blob/v1.0/source/media/images/teflonLogo.png)
 
 Teflon is a build system designed to make polymer based application development easy.
 

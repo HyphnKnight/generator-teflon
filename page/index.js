@@ -154,9 +154,17 @@ module.exports = generators.Base.extend({
 										this.config.get('elements') );
 
 			if ( this.config.get( 'templateType' ) === 'html' ) {
+
+				log.creating( `${process.cwd()}/source/${this.pageName}.html` );
+
 				fs.writeFileSync( `${process.cwd()}/source/${this.pageName}.html` , jade (buffer , { pretty : true , filename : __filename } ) );
+
 			} else {
+
+				log.creating( `${process.cwd()}/source/${this.pageName}.jade` );
+
 				fs.writeFileSync( `${process.cwd()}/source/${this.pageName}.jade` , buffer );
+
 			}
 
 		}

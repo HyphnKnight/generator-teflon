@@ -8,7 +8,7 @@ const
 	log			= require( 'log' );
 
 function createVar ( name , value ) {
-	return `-var ${name} = ${value}\n`;
+	return `-var ${name} = "${value}";\n`;
 }
 
 function createCollectionImports ( elements ) {

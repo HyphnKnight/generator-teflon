@@ -2,7 +2,8 @@ const
 	generators	= require( 'yeoman-generator' ),
 	path		= require( 'path' ),
 	jade		= require( 'jade' ),
-	prompter	= require( `${global.teflon.bin}/prompter.js` ),
+	_			= require( 'underscore' ),
+	prompter	= require( `${__dirname}/../bin/prompter.js` ),
 	fs			= require( 'fs-extra-promise' ),
 	log			= require( 'log' );
 
@@ -40,25 +41,25 @@ function createFacebook ( type , image , url ) {
 
 function buildPage ( src , title , description , author , favicon , facebook , keywords , elements ) {
 
-	return	`${createVar( 'title' , title )}
-			${createVar( 'description' , description )}
-			${createVar( 'author' , author )}
-			${src}
-			${ !!favicon ? createFavicon(favicon) : '' }
-			${ !!facebook ? createFacebook( facebook.type , facebook.image , facebook.url ) : '' }
-			${ !!keywords ? createKeywords(keywords) : '' }
-			${ !!elements ? createCollectionImports(elements) : '' }
-			\tbody`;
+	return	`${createVar( 'title' , title )}${createVar( 'description' , description )}${createVar( 'author' , author )}\n` +
+			src +
+			`\n${ !!favicon ? createFavicon(favicon) : '' }\n${ !!facebook ? createFacebook( facebook.type , facebook.image , facebook.url ) : '' }\n${ !!keywords ? createKeywords(keywords) : '' }\n` +
+			`\n${ !!elements ? createCollectionImports(elements) : '' }` +
+			'\n\tbody';
 
 }
 
 function getElementList ( source ) {
 
-	return _.chain( fs.readdirSync( source , 'utf8' ) )
+	return _.chain( fs.readdirSync( `${source}/elements` , 'utf8' ) )
+		.filter( collection => { return collection.search('.DS_Store') === -1; } )
 		.map( collection => {
-			return _.map( fs.readdirSync( collection ) , element => {
-				return `${collection} | ${element}`;
-			});
+			return _.chain( fs.readdirSync( `${source}/elements/${collection}` ) )
+				.filter( element => { return element.search('.DS_Store') === -1; } )
+				.map( element => {
+					return `${collection} | ${element}`;
+				})
+				.value();
 		} )
 		.flatten()
 		.value();
@@ -126,29 +127,30 @@ module.exports = generators.Base.extend({
 		elements		: prompter( 'checkbox',
 									'elements',
 									'template language :',
-									'',
-									getElementList(global.source) ),
-	}
+									['core | core-polymer','core | core-scripts','core | core-styles'],
+									getElementList(`${process.cwd()}/source`) ),
+	},
 
 	writing : {
 
 		indexFile : function () {
 
-			const buffer = buildPage(	fs.readFileSync( './index.jade' ),
+			const buffer = buildPage(	fs.readFileSync( `${__dirname}/index.jade` ),
 										this.pageName,
-										this.config.get(description) === '' ? null : this.config.get(description),
-										this.config.get(author) === '' ? null : this.config.get(author),
-										this.config.get(favicon) === '' ? null : this.config.get(favicon),
-										this.config.get(facebook_type) !== '' || this.config.get(facebook_image) !== '' || this.config.get(facebook_url) !== '' ?
-											{	type : this.config.get(facebook_type),
-												image : this.config.get(facebook_image),
-												url : this.config.get(facebook_url } : null,
-										this.config.get( elements );
+										this.config.get('description') === '' ? null : this.config.get('description'),
+										this.config.get('author') === '' ? null : this.config.get('author'),
+										this.config.get('favicon') === '' ? null : this.config.get('favicon'),
+										this.config.get('facebook_type') !== '' || this.config.get('facebook_image') !== '' || this.config.get('facebook_url') !== '' ?
+											{	type : this.config.get('facebook_type'),
+												image : this.config.get('facebook_image'),
+												url : this.config.get('facebook_url') } : null,
+										this.config.get('keywords'),
+										this.config.get('elements') );
 
 			if ( this.config.get( 'templateType' ) === 'html' ) {
-				fs.writeFileSync( jade(buffer) );
+				fs.writeFileSync( `${process.cwd()}/source/${this.pageName}.html` , jade(buffer) );
 			} else {
-				fs.writeFileSync( buffer );
+				fs.writeFileSync( `${process.cwd()}/source/${this.pageName}.jade` , buffer );
 			}
 
 		}

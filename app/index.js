@@ -2,19 +2,22 @@
 
 global.root	= process.cwd();
 global.source = `${global.root}/source`;
+global.bin = `${__dirname}/../bin`;
 global.teflon = {
 	root : `${__dirname}/..`,
-	bin : `${__dirname}/../bin`,
-	imports : `${__dirname}/imports`
+	bin : `${__dirname}/bin`,
+	imports : `${__dirname}/imports`,
+	core : `${__dirname}/core`
 };
 
 const
 	generators	= require( 'yeoman-generator' ),
 	path		= require( 'path' ),
 	jade		= require( 'jade' ),
-	prompter	= require( `${global.teflon.bin}/prompter.js` ),
+	prompter	= require( `${global.bin}/prompter.js` ),
 	fs			= require( 'fs-extra-promise' ),
-	log			= require( 'log' );
+	log			= require( 'log' ),
+	exec		= require( 'child_process' ).exec;
 
 module.exports = generators.Base.extend({
 
@@ -66,12 +69,13 @@ module.exports = generators.Base.extend({
 
 		createStartingContent : function () {
 
-			fs.mkdirSync( `${global.source}/elements/core` );
-			fs.mkdirSync( `${global.source}/media/images` );
-			fs.mkdirSync( `${global.source}/media/fonts` );
+			fs.mkdirpSync( `${global.source}/elements` );
+			fs.mkdirpSync( `${global.source}/media/images` );
+			fs.mkdirpSync( `${global.source}/media/fonts` );
 
-			fs.copySync( './imports' , `${global.source}/imports` );
-			fs.copySync( './bin' , `${global.root}/bin` );
+			fs.copySync( global.teflon.imports , `${global.source}/imports` );
+			fs.copySync( global.teflon.core , `${global.source}/elements/core` );
+			fs.copySync( global.teflon.bin , `${global.root}/bin` );
 
 			this.composeWith( 'teflon:add-page', { options: {} , args : [ 'index' ] } );
 
@@ -140,12 +144,6 @@ module.exports = generators.Base.extend({
 			} );
 
 		}
-
-	},
-
-	end : function () {
-
-		log.ending( 'teflon has finished building' );
 
 	}
 

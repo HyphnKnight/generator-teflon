@@ -26,16 +26,16 @@ function createCollectionImport ( collection , elements ) {
 }
 
 function createFavicon ( url ) {
-	return `\t\tlink(rel="icon" href='#{${url}}' type="image/x-icon")`
+	return `\t\tlink(rel="icon" href='${url}' type="image/x-icon")`
 }
 
 function createKeywords ( keywords ) {
-	return `\t\tmeta(name='keywords' content='#{${keywords}}')`
+	return `\t\tmeta(name='keywords' content='${keywords}')`
 }
 
 function createFacebook ( type , image , url ) {
 
-	return	`\t\tmeta(property='og:type' content='#{${type}}')\n\t\tmeta(property='og:description' content='#{description}')\n\t\tmeta(property='og:image' content='#{${image}}')\n\t\tmeta(property='og:url' content='#{${url}}')\n\t\tmeta(property='og:site_name' content='#{title}')`;
+	return	`\t\tmeta(property='og:type' content='${type}')\n\t\tmeta(property='og:description' content='#{description}')\n\t\tmeta(property='og:image' content='${image}')\n\t\tmeta(property='og:url' content='${url}')\n\t\tmeta(property='og:site_name' content='#{title}')`;
 
 }
 

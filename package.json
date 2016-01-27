@@ -1,18 +1,17 @@
 {
-  "name": "teflon",
+  "name": "generator-teflon",
   "version": "1.0.0",
   "description": "Polymer App Template",
-  "main": "bin/build.js",
-  "scripts": {
-    "start": "node bin/build.js",
-    "dev": "node bin/test.js && node bin/build.js --s --d --w",
-    "build": "node bin/test.js && node bin/build.js --c",
-    "test": "node bin/test.js"
-  },
+  "main": "app/index.js",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/HyphnKnight/Teflon.git"
   },
+  "files": [
+    "app",
+    "page",
+    "element"
+  ],
   "keywords": [
     "Polymer"
   ],
@@ -23,25 +22,10 @@
   },
   "homepage": "https://github.com/HyphnKnight/Teflon#readme",
   "dependencies": {
-    "autoprefixer": "^6.1.2",
-    "babel-core": "^6.3.13",
-    "babel-preset-es2015": "^6.3.13",
-    "csscomb": "^3.1.8",
-    "cssnano": "^3.3.2",
-    "express": "^4.13.3",
     "fs-extra-promise": "^0.3.1",
-    "glob": "^6.0.1",
-    "html-minifier": "^1.1.1",
-    "imagemin": "^4.0.0",
     "jade": "^1.11.0",
-    "jshint": "^2.8.0",
     "log": "github:hyphnknight/log",
-    "node-sass": "^3.4.2",
-    "node-watch": "^0.3.5",
-    "postcss": "^5.0.12",
-    "rsvp": "^3.1.0",
-    "uglify-js": "^2.6.1",
     "underscore": "^1.8.3",
-    "vulcanize": "^1.14.0"
+    "yeoman-generator": "^0.22.4"
   }
 }

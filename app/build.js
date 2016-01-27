@@ -1,13 +1,5 @@
 'use strict';
 
-const
-	generators	= require( 'yeoman-generator' ),
-	path		= require( 'path' ),
-	jade		= require( 'jade' ),
-	prompter	= require( `${global.teflon.bin}/prompter.js` ),
-	fs			= require( 'fs-extra-promise' ),
-	log			= require( 'log' );
-
 global.root	= process.cwd();
 global.source = `${global.root}/source`;
 global.bin = `${global.root}/bin`;
@@ -16,6 +8,14 @@ global.teflon = {
 	bin : `${__dirname}/bin`,
 	imports : `${__dirname}/imports`
 };
+
+const
+	generators	= require( 'yeoman-generator' ),
+	path		= require( 'path' ),
+	jade		= require( 'jade' ),
+	prompter	= require( `${global.teflon.bin}/prompter.js` ),
+	fs			= require( 'fs-extra-promise' ),
+	log			= require( 'log' );
 
 module.exports = generators.Base.extend({
 

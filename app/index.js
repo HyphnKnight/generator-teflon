@@ -13,7 +13,7 @@ global.teflon = {
 const
 	generators	= require( 'yeoman-generator' ),
 	path		= require( 'path' ),
-	jade		= require( 'jade' ),
+	jade		= require( 'jade' ).render,
 	prompter	= require( `${global.bin}/prompter.js` ),
 	fs			= require( 'fs-extra-promise' ),
 	log			= require( 'log' ),
@@ -77,7 +77,7 @@ module.exports = generators.Base.extend({
 			fs.copySync( global.teflon.core , `${global.source}/elements/core` );
 			fs.copySync( global.teflon.bin , `${global.root}/bin` );
 
-			this.composeWith( 'teflon:add-page', { options: {} , args : [ 'index' ] } );
+			this.composeWith( 'teflon:page', { options: {} , args : [ 'index' ] } );
 
 		},
 

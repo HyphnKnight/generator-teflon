@@ -9,8 +9,8 @@
   },
   "files": [
     "app",
-    "add-page",
-    "add-el"
+    "page",
+    "element"
   ],
   "keywords": [
     "Polymer"

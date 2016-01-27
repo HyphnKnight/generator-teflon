@@ -1,7 +1,7 @@
 const
 	generators	= require( 'yeoman-generator' ),
 	path		= require( 'path' ),
-	jade		= require( 'jade' ),
+	jade		= require( 'jade' ).render,
 	_			= require( 'underscore' ),
 	prompter	= require( `${__dirname}/../bin/prompter.js` ),
 	fs			= require( 'fs-extra-promise' ),
@@ -39,9 +39,14 @@ function createFacebook ( type , image , url ) {
 
 }
 
-function buildPage ( src , title , description , author , favicon , facebook , keywords , elements ) {
+function buildPage ( src , type , title , description , author , favicon , facebook , keywords , elements ) {
+
+	const imports = type === 'html' ? 
+		'\ninclude ./../app/imports/jade/_config.jade\ninclude ./../app/imports/jade/_mixin.jade\n' :
+		'\ninclude ./imports/jade/_config.jade\ninclude ./imports/jade/_mixin.jade\n';
 
 	return	`${createVar( 'title' , title )}${createVar( 'description' , description )}${createVar( 'author' , author )}\n` +
+			imports +
 			src +
 			`\n${ !!favicon ? createFavicon(favicon) : '' }\n${ !!facebook ? createFacebook( facebook.type , facebook.image , facebook.url ) : '' }\n${ !!keywords ? createKeywords(keywords) : '' }\n` +
 			`\n${ !!elements ? createCollectionImports(elements) : '' }` +
@@ -80,7 +85,7 @@ module.exports = generators.Base.extend({
 
 		initiated : function ( ) {
 
-			log.runningTask( 'add-page', 'Teflon' );
+			log.starting( `Building the ${this.pageName} page` );
 
 		}
 
@@ -136,6 +141,7 @@ module.exports = generators.Base.extend({
 		indexFile : function () {
 
 			const buffer = buildPage(	fs.readFileSync( `${__dirname}/index.jade` ),
+										this.config.get( 'templateType' ),
 										this.pageName,
 										this.config.get('description') === '' ? null : this.config.get('description'),
 										this.config.get('author') === '' ? null : this.config.get('author'),
@@ -148,12 +154,18 @@ module.exports = generators.Base.extend({
 										this.config.get('elements') );
 
 			if ( this.config.get( 'templateType' ) === 'html' ) {
-				fs.writeFileSync( `${process.cwd()}/source/${this.pageName}.html` , jade(buffer) );
+				fs.writeFileSync( `${process.cwd()}/source/${this.pageName}.html` , jade (buffer , { pretty : true , filename : __filename } ) );
 			} else {
 				fs.writeFileSync( `${process.cwd()}/source/${this.pageName}.jade` , buffer );
 			}
 
 		}
+
+	},
+
+	end : function () {
+
+		log.ending( `The ${this.pageName} page has been built` );
 
 	}
 

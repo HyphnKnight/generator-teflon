@@ -1,7 +1,8 @@
 const
 	generators	= require( 'yeoman-generator' ),
 	path		= require( 'path' ),
-	prompter	= require( './../bin/prompter.js' ),
+	jade		= require( 'jade' ),
+	prompter	= require( `${global.teflon.bin}/prompter.js` ),
 	fs			= require( 'fs-extra-promise' ),
 	log			= require( 'log' );
 
@@ -33,11 +34,7 @@ function createKeywords ( keywords ) {
 
 function createFacebook ( type , image , url ) {
 
-	return	`\t\tmeta(property='og:type' content='#{${type}}')\n` +
-			`\t\tmeta(property='og:description' content='#{description}')\n` +
-			`\t\tmeta(property='og:image' content='#{${image}}')\n` +
-			`\t\tmeta(property='og:url' content='#{${url}}')\n` +
-			`\t\tmeta(property='og:site_name' content='#{title}')\n`;
+	return	`\t\tmeta(property='og:type' content='#{${type}}')\n\t\tmeta(property='og:description' content='#{description}')\n\t\tmeta(property='og:image' content='#{${image}}')\n\t\tmeta(property='og:url' content='#{${url}}')\n\t\tmeta(property='og:site_name' content='#{title}')`;
 
 }
 
@@ -139,14 +136,14 @@ module.exports = generators.Base.extend({
 
 			const buffer = buildPage(	fs.readFileSync( './index.jade' ),
 										this.pageName,
-										this.description === '' ? null : this.description,
-										this.author === '' ? null : this.author,
-										this.favicon === '' ? null : this.favicon,
-										this.facebook_type !== '' || this.facebook_image !== '' || facebook_url !== '' ?
-											{	type : this.facebook_type,
-												image : this.facebook_image,
-												url : this.facebook_url } : null,
-										this.elements );
+										this.config.get(description) === '' ? null : this.config.get(description),
+										this.config.get(author) === '' ? null : this.config.get(author),
+										this.config.get(favicon) === '' ? null : this.config.get(favicon),
+										this.config.get(facebook_type) !== '' || this.config.get(facebook_image) !== '' || this.config.get(facebook_url) !== '' ?
+											{	type : this.config.get(facebook_type),
+												image : this.config.get(facebook_image),
+												url : this.config.get(facebook_url } : null,
+										this.config.get( elements );
 
 			if ( this.config.get( 'templateType' ) === 'html' ) {
 				fs.writeFileSync( jade(buffer) );

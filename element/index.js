@@ -8,6 +8,14 @@ const
 
 module.exports = generators.Base.extend({
 
+	constructor : function ( ) {
+
+		generators.Base.apply(this, arguments);
+
+		this.argument('elementName', { type: String, required: true });
+
+	},
+
 	initializing : {
 
 		initiated : function () {
@@ -19,11 +27,6 @@ module.exports = generators.Base.extend({
 	},
 
 	prompting : {
-
-		element			: prompter( 'input',
-									'element',
-									'Element Name :',
-									'' ),
 
 		collection		: prompter( 'input',
 									'collection',
@@ -59,28 +62,38 @@ module.exports = generators.Base.extend({
 
 		directory : function () {
 
-			fs.mkdirpSync( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.config.get('element')}` );
+			log.creating( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}` );
+
+			fs.mkdirpSync( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}` );
 
 		},
 
 		createFiles : function () {
 
 			const
-				templateBuffer = `dom-module#${this.config.get('collection')}-${this.config.get('element')}\n\n\ttemplate\n\n\t\tlink(rel='stylesheet' type="text/css" href='style.css')\n\n\tscript(src='script.js')`,
-				scriptBuffer = `Polymer({\n\n\tis: "${this.config.get('collection')}-${this.config.get('element')}",\n\n\tproperties: {\n\n\t},\n\n\tready : function ( ) {\n\n\t}\n\n});`;
+				templateBuffer = `dom-module#${this.config.get('collection')}-${this.elementName}\n\n\ttemplate\n\n\t\tlink(rel='stylesheet' type="text/css" href='style.css')\n\n\tscript(src='script.js')`,
+				scriptBuffer = `Polymer({\n\n\tis: "${this.config.get('collection')}-${this.elementName}",\n\n\tproperties: {\n\n\t},\n\n\tready : function ( ) {\n\n\t}\n\n});`;
 
-			fs.writeFileSync(	`${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.config.get('element')}/index.${this.config.get('templateType')}`,
+			log.creating( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/index.${this.config.get('templateType')}` );
+
+			fs.writeFileSync(	`${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/index.${this.config.get('templateType')}`,
 								this.config.get('templateType') === 'html' ? jade( templateBuffer , { pretty : true , filename : __filename } ) : templateBuffer,
 								'utf8' );
 
 			if ( this.config.get('scriptLanguage') !== 'none' ) {
-				fs.writeFileSync(	`${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.config.get('element')}/script.js`,
+
+				log.creating( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/script.js` );
+
+				fs.writeFileSync(	`${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/script.js`,
 									scriptBuffer,
 									'utf8' );
 			}
 
 			if ( this.config.get('styleLanguage') !== 'none' ) {
-				fs.writeFileSync(	`${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.config.get('element')}/style.${this.config.get('styleLanguage')}`,
+
+				log.creating( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/style.${this.config.get('styleLanguage')}` );
+
+				fs.writeFileSync(	`${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/style.${this.config.get('styleLanguage')}`,
 									':root{}',
 									'utf8' );
 			}
@@ -91,7 +104,7 @@ module.exports = generators.Base.extend({
 
 	end : function () {
 
-		log.ending( `${this.config.get('collection')}-${this.config.get('element')} has been built` );
+		log.ending( `${this.config.get('collection')}-${this.elementName} has been built` );
 
 	}
 

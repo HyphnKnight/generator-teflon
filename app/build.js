@@ -78,7 +78,7 @@ module.exports = generators.Base.extend({
 
 		createPackageJSON : function () {
 
-			let package = {
+			let npmPackage = {
 				main: 'bin/build.js',
 				scripts: {
 					start: 'node bin/build.js',
@@ -89,35 +89,35 @@ module.exports = generators.Base.extend({
 				dependencies: {}
 			};
 
-			package.dependencies['autoprefixer'] = '^6.1.2';
-			package.dependencies['babel-core'] = '^6.3.13';
-			package.dependencies['babel-preset-es2015'] = '^6.3.13';
-			package.dependencies['csscomb'] = '^3.1.8';
-			package.dependencies['cssnano'] = '^3.3.2';
-			package.dependencies['express'] = '^4.13.3';
-			package.dependencies['fs-extra-promise'] = '^0.3.1';
-			package.dependencies['glob'] = '^6.0.1';
-			package.dependencies['html-minifier'] = '^1.1.1';
-			package.dependencies['imagemin'] = '^4.0.0';
-			package.dependencies['jade'] = '^1.11.0';
-			package.dependencies['jshint'] = '^2.8.0';
-			package.dependencies['log'] = 'github:hyphnknight/log';
-			package.dependencies['node-sass'] = '^3.4.2';
-			package.dependencies['node-watch'] = '^0.3.5';
-			package.dependencies['postcss'] = '^5.0.12';
-			package.dependencies['rsvp'] = '^3.1.0';
-			package.dependencies['uglify-js'] = '^2.6.1';
-			package.dependencies['underscore'] = '^1.8.3';
-			package.dependencies['vulcanize'] = '^1.14.0';
+			npmPackage.dependencies['autoprefixer'] = '^6.1.2';
+			npmPackage.dependencies['babel-core'] = '^6.3.13';
+			npmPackage.dependencies['babel-preset-es2015'] = '^6.3.13';
+			npmPackage.dependencies['csscomb'] = '^3.1.8';
+			npmPackage.dependencies['cssnano'] = '^3.3.2';
+			npmPackage.dependencies['express'] = '^4.13.3';
+			npmPackage.dependencies['fs-extra-promise'] = '^0.3.1';
+			npmPackage.dependencies['glob'] = '^6.0.1';
+			npmPackage.dependencies['html-minifier'] = '^1.1.1';
+			npmPackage.dependencies['imagemin'] = '^4.0.0';
+			npmPackage.dependencies['jade'] = '^1.11.0';
+			npmPackage.dependencies['jshint'] = '^2.8.0';
+			npmPackage.dependencies['log'] = 'github:hyphnknight/log';
+			npmPackage.dependencies['node-sass'] = '^3.4.2';
+			npmPackage.dependencies['node-watch'] = '^0.3.5';
+			npmPackage.dependencies['postcss'] = '^5.0.12';
+			npmPackage.dependencies['rsvp'] = '^3.1.0';
+			npmPackage.dependencies['uglify-js'] = '^2.6.1';
+			npmPackage.dependencies['underscore'] = '^1.8.3';
+			npmPackage.dependencies['vulcanize'] = '^1.14.0';
 
-			package.name = this.config.get( 'name' );
-			package.version = this.config.get( 'version' );
-			package.description = this.config.get( 'description' );
-			package.author = this.config.get( 'author' );
-			package.keywords = this.config.get( 'keywords' );
-			package.license = this.config.get( 'license' );
+			npmPackage.name = this.config.get( 'name' );
+			npmPackage.version = this.config.get( 'version' );
+			npmPackage.description = this.config.get( 'description' );
+			npmPackage.author = this.config.get( 'author' );
+			npmPackage.keywords = this.config.get( 'keywords' );
+			npmPackage.license = this.config.get( 'license' );
 
-			fs.writeFileSync(`${global.root}/package.json`, JSON.stringify(package) , 'utf8' );
+			fs.writeFileSync(`${global.root}/package.json`, JSON.stringify(npmPackage) , 'utf8' );
 
 		}
 

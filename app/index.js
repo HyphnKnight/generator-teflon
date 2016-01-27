@@ -141,6 +141,8 @@ module.exports = generators.Base.extend({
 					process.exit(1);
 				}
 
+				log.ending( 'Teflon has succesfully Built' );
+
 			} );
 
 		}

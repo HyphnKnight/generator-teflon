@@ -71,8 +71,17 @@ module.exports = generators.Base.extend({
 		createFiles : function () {
 
 			const
-				templateBuffer = `dom-module#${this.config.get('collection')}-${this.elementName}\n\n\ttemplate\n\n\t\tlink(rel='stylesheet' type="text/css" href='style.css')\n\n\tscript(src='script.js')`,
-				scriptBuffer = `Polymer({\n\n\tis: "${this.config.get('collection')}-${this.elementName}",\n\n\tproperties: {\n\n\t},\n\n\tready : function ( ) {\n\n\t}\n\n});`;
+				templateIncludes = {
+					config : path.relative( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/index.${this.config.get('templateType')}` , `${process.cwd()}/source/imports/jade/_config.jade` ),
+					mixin : path.relative( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/index.${this.config.get('templateType')}` , `${process.cwd()}/source/imports/jade/_mixin.jade` )
+				},
+				styleIncludes = {
+					config : path.relative( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/style.${this.config.get('styleLanguage')}` , `${process.cwd()}/source/imports/sass/_config.scss` ),
+					mixin : path.relative( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/style.${this.config.get('styleLanguage')}` , `${process.cwd()}/source/imports/sass/_mixin.scss` )
+				},
+				templateBuffer = `include ${templateIncludes.config}\ninclude ${templateIncludes.mixin}\n\ndom-module#${this.config.get('collection')}-${this.elementName}\n\n\ttemplate\n\n\t\tlink(rel='stylesheet' type="text/css" href='style.css')\n\n\tscript(src='script.js')`,
+				scriptBuffer = `Polymer({\n\n\tis: "${this.config.get('collection')}-${this.elementName}",\n\n\tproperties: {\n\n\t},\n\n\tready : function ( ) {\n\n\t}\n\n});`,
+				styleBuffer = `@import '${styleIncludes.config}';\n@import '${styleIncludes.mixin}';\n\n:root{}`;
 
 			log.creating( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/index.${this.config.get('templateType')}` );
 
@@ -94,7 +103,7 @@ module.exports = generators.Base.extend({
 				log.creating( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/style.${this.config.get('styleLanguage')}` );
 
 				fs.writeFileSync(	`${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/style.${this.config.get('styleLanguage')}`,
-									':root{}',
+									styleBuffer,
 									'utf8' );
 			}
 

@@ -61,7 +61,7 @@ function style ( sourcePath , destinationPath , compress , fail ) {
 			if ( path.extname( sourcePath ) === '.css' ) {
 				return buffer;
 			} else {
-				return sass( { data : buffer, outputStyle : 'nested' } , sourcePath );
+				return sass( { data : buffer, includePaths: [ `${process.cwd()}/source/imports/sass` , './' ], outputStyle : 'nested' } , sourcePath );
 			}
 		} )
 		.catch( error => {
@@ -91,7 +91,7 @@ function jade ( sourcePath , destinationPath , compress , fail ) {
 	log.runningTask( 'compile.jade' , 'node' , sourcePath);
 
 	return fs.readFileAsync( sourcePath , 'utf8' )
-		.then ( buffer => { return fs.outputFileAsync( destinationPath , jadeRender( buffer , { pretty : !!compress ? false : '\t' , filename : sourcePath } ) );  } )
+		.then ( buffer => { return fs.outputFileAsync( destinationPath , jadeRender( buffer , { pretty : !!compress ? false : '\t' , filename : sourcePath , basedir : path.dirname(sourcePath) } ) );  } )
 		.catch( error => {
 			log.error ( `compile.jade has failed to parse ${sourcePath}` , error );
 			if ( fail ) { process.exit(1); }

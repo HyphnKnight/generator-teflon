@@ -113,7 +113,7 @@ module.exports = generators.Base.extend({
 			npmPackage.dependencies['rsvp'] = '^3.1.0';
 			npmPackage.dependencies['uglify-js'] = '^2.6.1';
 			npmPackage.dependencies['underscore'] = '^1.8.3';
-			npmPackage.dependencies['vulcanize'] = '^1.14.0';
+			npmPackage.dependencies['vulcanize'] = 'git://github.com/Polymer/vulcanize.git#22a74b0c06fd31073e4be708058377e94fd4d6f1';
 
 			npmPackage.name = this.config.get( 'name' );
 			npmPackage.version = this.config.get( 'version' );

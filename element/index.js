@@ -81,7 +81,7 @@ module.exports = generators.Base.extend({
 				},
 				templateBuffer = `include ${templateIncludes.config}\ninclude ${templateIncludes.mixin}\n\ndom-module#${this.config.get('collection')}-${this.elementName}\n\n\ttemplate\n\n\t\tlink(rel='stylesheet' type="text/css" href='style.css')\n\n\tscript(src='script.js')`,
 				scriptBuffer = `Polymer({\n\n\tis: "${this.config.get('collection')}-${this.elementName}",\n\n\tproperties: {\n\n\t},\n\n\tready : function ( ) {\n\n\t}\n\n});`,
-				styleBuffer = `@import '${styleIncludes.config}';\n@import '${styleIncludes.mixin}';\n\n:root{}`;
+				styleBuffer = `@import '${styleIncludes.config}';\n@import '${styleIncludes.mixin}';\n\n:host{}`;
 
 			log.creating( `${process.cwd()}/source/elements/${this.config.get('collection')}/${this.config.get('collection')}-${this.elementName}/index.${this.config.get('templateType')}` );
 

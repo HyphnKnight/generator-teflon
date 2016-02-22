@@ -7,7 +7,7 @@ const
 
 function lint ( buffer , path , options ) {
 
-	_.defaults( options , { esnext : true , undef : true , predef : [ 'console' , 'define' , '_' , 'Polymer' , 'window' ] } );
+	_.defaults( options , { esnext : true , undef : true , predef : [ 'console' , 'define' , '_' , 'Polymer' , 'window' , 'document' ] } );
 
 	log.processing( path , 'jshint.JSHINT' );
 

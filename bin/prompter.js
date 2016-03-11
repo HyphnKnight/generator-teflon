@@ -3,28 +3,21 @@ module.exports = ( function ( _ ) {
 
 	return function ( type, name, message, defaultChoice, choices ) {
 
-		var parser = function( input ) {
+		let parser = input => input;
 
-			return input;
-
-		};
-
-		if ( type === 'array' ) {
-
-			type = 'input';
-
-			parser = function ( input ) {
-
-				return input.split(' ');
-
-			};
-
-		}
-		var options = {
+		const options = {
 			type	: type,
 			name	: name,
 			message	: message
 		};
+
+		if ( options.type === 'array' ) {
+
+			options.type = 'input';
+
+			parser = input => input.split(' ');
+
+		}
 
 		if ( defaultChoice ) {
 
@@ -42,13 +35,13 @@ module.exports = ( function ( _ ) {
 
 			var done = this.async();
 
-			this.prompt( options, function ( answers ) {
+			this.prompt( options, answers => {
 
 				this.config.set( name, parser( answers[ name ] ) );
 
 				done();
 
-			}.bind( this ) );
+			} );
 
 		};
 

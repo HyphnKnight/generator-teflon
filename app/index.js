@@ -11,15 +11,15 @@ global.teflon = {
 };
 
 const
-	generators	= require( 'yeoman-generator' ),
-	path		= require( 'path' ),
-	jade		= require( 'jade' ).render,
+	yeo      	= require( 'yeoman-generator' ),
+	path	  	= require( 'path' ),
+	jade		  = require( 'jade' ).render,
 	prompter	= require( `${global.bin}/prompter.js` ),
-	fs			= require( 'fs-extra-promise' ),
-	log			= require( 'log' ),
-	exec		= require( 'child_process' ).exec;
+	fs			  = require( 'fs-extra-promise' ),
+	log			  = require( 'log' ),
+	exec		  = require( 'child_process' ).exec;
 
-module.exports = generators.Base.extend({
+module.exports = yeo.Base.extend({
 
 	initializing : {
 

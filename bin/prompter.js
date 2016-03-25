@@ -1,4 +1,5 @@
 module.exports = ( function ( _ ) {
+	'use strict';
 
 
 	return function ( type, name, message, defaultChoice, choices ) {
